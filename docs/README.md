@@ -10,7 +10,7 @@ actions:
   link: /zh/project/overview
   type: secondary
 
-footer: MIT Licensed | Copyright © 2022-Powered by Vuepress
+footer: MIT Licensed | Copyright © 2023-present Powered by Vuepress
 ---
 
 ## 使用说明
