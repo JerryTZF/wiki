@@ -1,5 +1,6 @@
 import {defaultTheme, defineUserConfig} from "vuepress";
 import {searchPlugin} from "@vuepress/plugin-search";
+import clipboardPlugin from "vuepress-plugin-clipboard";
 
 export default defineUserConfig({
     base: '/',
@@ -43,6 +44,9 @@ export default defineUserConfig({
             },
             hotKeys: ['s', '/'],
             maxSuggestions: 10,
+        }),
+        clipboardPlugin({
+            align: "top"
         })
     ],
 })

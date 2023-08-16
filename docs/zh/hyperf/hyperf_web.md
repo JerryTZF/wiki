@@ -27,10 +27,21 @@ sidebar: [
 sidebarDepth: 3
 ---
 
+[[toc]]
+
 # web常规使用
 
-::: tip
+::: tip 【说明】
 这里主要列举我开发(WEB)过程中一些常规的操作，和一些自己封装的组件。\
-详细可以参考：[Lib库封装](https://github.com/JerryTZF/hyperf-demo/tree/main/app/Lib) \
 另外，`Hyperf` 是基于 `Swoole` 生命周期，这里 `Swoole` 的基础知识非常重要，请***务必仔细*** 阅读[基础部分](https://wiki.swoole.com/#/learn)
+
+> **基于Hyperf v3.x**
+:::
+
+--- 
+
+::: warning ￣□￣｜｜
+持续施工 :construction: \
+1. 计划补齐三方(微信、支付宝、阿里云等)的对接使用示例。
+2. 持续勘误。
 :::

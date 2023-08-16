@@ -29,4 +29,12 @@ next: /zh/hyperf/web/image/barcode.md
 sidebarDepth: 3
 ---
 
-# qrcode
+# 二维码
+
+## 安装依赖包
+
+> [标准库地址](https://packagist.org/packages/endroid/qr-code)
+
+```shell:no-line-numbers
+composer require endroid/qr-code
+```
