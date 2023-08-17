@@ -191,3 +191,9 @@ public function saveQrcode(): array
     return $this->result->getResult();
 }
 ```
+
+---
+
+::: warning 【注意】
+PNG、JPG 类型需要 `Gd`、`Imagick` 库支持
+:::
