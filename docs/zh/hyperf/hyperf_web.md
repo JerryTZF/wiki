@@ -32,8 +32,8 @@ sidebarDepth: 3
 # web常规使用
 
 ::: tip 【说明】
-这里主要列举我开发(WEB)过程中一些常规的操作，和一些自己封装的组件。\
-另外，`Hyperf` 是基于 `Swoole` 生命周期，这里 `Swoole` 的基础知识非常重要，请***务必仔细*** 阅读[基础部分](https://wiki.swoole.com/#/learn)
+这里主要列举我开发(WEB)过程中一些常规的操作，和一些自己封装的组件。都是基于 **`Hyperf`** 框架 。\
+另外，`Hyperf` 是基于 `Swoole` 生命周期，这里 `Swoole` 的基础知识非常重要，请***务必仔细*** 阅读[基础部分](https://wiki.swoole.com/#/learn)。
 
 > **基于 <Badge type="tip" text="Hyperf v3.x" vertical="middle" />**
 :::
