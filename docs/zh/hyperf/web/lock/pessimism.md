@@ -90,3 +90,24 @@ for update 的条件如果没有命中索引，则会锁表！！！\
 - 必须是 `mysql`的 `innoDb` 表。
 - 必须开启 `transaction` 事务。
 
+---
+
+## 构建数据库表
+
+---
+
+```sql
+CREATE TABLE `hyperf`.`goods` (
+  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL DEFAULT '' COMMENT '商品名称',
+  `price` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '商品价格',
+  `stock` int(11) UNSIGNED ZEROFILL NOT NULL COMMENT '库存',
+  `brand` varchar(128) NOT NULL DEFAULT '' COMMENT '品牌',
+  `create_time` datetime NULL COMMENT '创建时间',
+  `update_time` datetime NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_name`(`name`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品表';
+```
+
+## 代码演示
