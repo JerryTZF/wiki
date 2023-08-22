@@ -53,7 +53,7 @@ Redis Version 大于 <Badge type="tip" text="2.8" vertical="middle" />
 ## 封装工具类
 
 ::: details 查看代码
-```php
+```php:no-line-numbers
 <?php
 
 declare(strict_types=1);
