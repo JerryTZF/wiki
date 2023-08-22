@@ -202,7 +202,7 @@ public function redisQueueLock(): array
         'gid' => $this->request->input('gid', 1),
         'num' => $this->request->input('num', 1),
     ];
-    $client = '121.1.21.331';
+    $client = '121.1.21.331' . uniqid();
     $queueInstance = RedisQueueFactory::getQueueInstance('limit-queue');
     $isPushSuccess = $queueInstance->push(new CreateOrderJob($client, $queueParams));
     if (! $isPushSuccess) {
