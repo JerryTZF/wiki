@@ -8,7 +8,7 @@ sidebar: [
 {text: '锁相关', collapsible: true, children: [
 {'text': 'Redis分布式锁', link: '/zh/hyperf/web/lock/redis'},
 {'text': '数据库悲观锁', link: '/zh/hyperf/web/lock/pessimism'},
-{'text': '数据库乐观锁', link: '/zh/hyperf/web/lock/optimistic'},
+{'text': '乐观锁', link: '/zh/hyperf/web/lock/optimistic'},
 {'text': '队列(单个消费)', link: '/zh/hyperf/web/lock/queue'},
 ]},
 {text: 'Office相关', collapsible: true, children: [
@@ -34,3 +34,19 @@ sidebarDepth: 3
 目录
 
 [[toc]]
+
+---
+
+## 安装依赖包
+
+> [标准库地址](https://packagist.org/packages/phpoffice/phpspreadsheet)
+
+ ```shell:no-line-numbers
+composer require phpoffice/phpspreadsheet
+```
+
+---
+
+## 封装工具类
+
+## 使用

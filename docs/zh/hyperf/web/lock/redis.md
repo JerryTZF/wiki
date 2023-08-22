@@ -8,7 +8,7 @@ sidebar: [
 {text: '锁相关', collapsible: true, children: [
 {'text': 'Redis分布式锁', link: '/zh/hyperf/web/lock/redis'},
 {'text': '数据库悲观锁', link: '/zh/hyperf/web/lock/pessimism'},
-{'text': '数据库乐观锁', link: '/zh/hyperf/web/lock/optimistic'},
+{'text': '乐观锁', link: '/zh/hyperf/web/lock/optimistic'},
 {'text': '队列(单个消费)', link: '/zh/hyperf/web/lock/queue'},
 ]},
 {text: 'Office相关', collapsible: true, children: [
@@ -230,3 +230,14 @@ public function redisLockAsync(): array
     return $this->result->setData($result)->getResult();
 }
 ```
+
+---
+
+## 使用场景
+
+- 集群模式中，多节点的 `写` 操作。
+- 多线程(或协程)编程中，不同的线程对内存的数据进行变更操作。
+
+## 其他方案
+
+- Zookeeper

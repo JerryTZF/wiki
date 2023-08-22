@@ -8,7 +8,7 @@ sidebar: [
 {text: '锁相关', collapsible: true, children: [
 {'text': 'Redis分布式锁', link: '/zh/hyperf/web/lock/redis'},
 {'text': '数据库悲观锁', link: '/zh/hyperf/web/lock/pessimism'},
-{'text': '数据库乐观锁', link: '/zh/hyperf/web/lock/optimistic'},
+{'text': '乐观锁', link: '/zh/hyperf/web/lock/optimistic'},
 {'text': '队列(单个消费)', link: '/zh/hyperf/web/lock/queue'},
 ]},
 {text: 'Office相关', collapsible: true, children: [
@@ -102,16 +102,17 @@ for update 的条件如果没有命中索引，则会锁表！！！\
 
 ```sql:no-line-numbers
 CREATE TABLE `hyperf`.`goods` (
-  `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) NOT NULL DEFAULT '' COMMENT '商品名称',
-  `price` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '商品价格',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '商品名称',
+  `price` decimal(10,2) NOT NULL DEFAULT '0.00' COMMENT '商品价格',
   `stock` int unsigned NOT NULL DEFAULT '0' COMMENT '库存',
-  `brand` varchar(128) NOT NULL DEFAULT '' COMMENT '品牌',
-  `create_time` datetime NULL COMMENT '创建时间',
-  `update_time` datetime NULL,
+  `version` int unsigned NOT NULL DEFAULT '0' COMMENT '乐观锁版本控制',
+  `brand` varchar(128) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '品牌',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`),
-  INDEX `idx_name`(`name`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '商品表';
+  KEY `idx_name` (`name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品表';
 ```
 ---
 
@@ -227,5 +228,11 @@ select * from information_schema.innodb_trx
 
 - 示例中的并发为5，当更大的时候，会出现死锁。
 - 锁定的条件一定要注意，必须走索引，最好走主键索引，因为没有命中索引会锁表。
-- 无论是锁行还是锁表，其他线程的读写操作都会出现等待甚至down机。
+- 当显式事务锁住某行数据时，该行数据其他的 非显式 `update` 操作也会锁等待，因为 `update` 单个SQL也是事务。不要以为其他 `update` 没在 `BEGIN` `COMMIT` 中就不会等待。
 - 最好不要使用 `MySQL` 进行显式锁操作。数据库应该更专注作为数据存储的存在。
+
+---
+
+## 五、使用场景
+
+- **并发较小** 、 **相对独立** 、**一致性较强** 的数据库操作。
