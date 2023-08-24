@@ -198,7 +198,7 @@ class ExportExcelHandler
 > 封装异常捕获
 
 ::: details
-```php:no-line-numbser
+```php:no-line-numbers
 <?php
 
 namespace App\Exception\Handler;
