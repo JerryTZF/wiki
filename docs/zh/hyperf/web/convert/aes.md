@@ -94,6 +94,8 @@ function openssl_encrypt(
 
 ## 代码封装
 
+### 原生OpenSSL
+
 ::: details 查看代码
 ```php:no-line-numbers
 <?php
@@ -193,6 +195,170 @@ class AES
 ```
 :::
 
+---
+
+### PhpSeclib 扩展包
+
+**1、安装依赖包**
+
+> [标准库地址](https://packagist.org/packages/phpseclib/phpseclib)
+
+```php:no-line-numbers
+composer require phpseclib/phpseclib
+```
+
+---
+
+**2、封装异常处理器**
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+namespace App\Exception\Handler;
+
+use App\Constants\SystemCode;
+use Hyperf\ExceptionHandler\ExceptionHandler;
+use Hyperf\HttpMessage\Stream\SwooleStream;
+use LogicException;
+use Psr\Http\Message\ResponseInterface;
+use Throwable;
+
+class PHPSeclibExceptionHandler extends ExceptionHandler
+{
+    public function handle(Throwable $throwable, ResponseInterface $response): ResponseInterface
+    {
+        // 禁止异常冒泡
+        $this->stopPropagation();
+
+        return $response->withHeader('Content-Type', 'application/json')
+            ->withStatus(200)->withBody(new SwooleStream(json_encode([
+                'code' => SystemCode::PHPSECLIB_ERR,
+                'msg' => SystemCode::getMessage(SystemCode::PHPSECLIB_ERR, [$throwable->getMessage()]),
+                'status' => false,
+                'data' => [],
+            ], JSON_UNESCAPED_UNICODE)));
+    }
+
+    public function isValid(Throwable $throwable): bool
+    {
+        return $throwable instanceof LogicException;
+    }
+}
+
+```
+
+---
+
+**3、注册异常处理器**
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+return [
+    'handler' => [
+        'http' => [
+            ...
+            // PHPSeclib 包异常捕获
+            App\Exception\Handler\PHPSeclibExceptionHandler::class,
+            ...
+        ],
+    ],
+];
+```
+
+---
+
+**4、封装PhpSeclib**
+
+::: details 查看代码
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+namespace App\Lib\Encrypt;
+
+use phpseclib3\Crypt\Common\SymmetricKey;
+
+class AesWithPHPSeclib
+{
+    /**
+     * aes实例.
+     */
+    private \phpseclib3\Crypt\AES $aesInstance;
+
+    /**
+     * 构造函数.
+     */
+    public function __construct(string $mode, int $keyLength, string $key, array $options = [])
+    {
+        $mode = strtolower($mode);
+        $aesInstance = new \phpseclib3\Crypt\AES($mode);
+        $aesInstance->setPreferredEngine(SymmetricKey::ENGINE_OPENSSL);
+        $aesInstance->setKeyLength($keyLength);
+        $aesInstance->enablePadding();
+
+        // ecb 和 gcm 不用添加 $iv
+        if (! in_array(SymmetricKey::MODE_MAP[$mode], [SymmetricKey::MODE_GCM, SymmetricKey::MODE_ECB])) {
+            // 注意别的语言是否是这种方式固定16位长度!!!
+            $iv = md5($options['iv'] ?? '', true);
+            $aesInstance->setIV($iv);
+        }
+
+        // 只有gcm 才有tag、nonce、aad
+        if (SymmetricKey::MODE_MAP[$mode] === SymmetricKey::MODE_GCM) {
+            $aesInstance->setTag($options['tag'] ?? '');
+            $aesInstance->setNonce($options['nonce'] ?? '');
+            $aesInstance->setAAD($options['aad'] ?? '');
+        }
+
+        $aesInstance->setKey($key);
+        $this->aesInstance = $aesInstance;
+    }
+
+    /**
+     * 加密输出Hex字符串.
+     */
+    public function encryptHex(array|string $data): string
+    {
+        $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $data;
+        return bin2hex($this->aesInstance->encrypt($data));
+    }
+
+    /**
+     * 解密Hex字符串.
+     */
+    public function decryptHex(string $decryptText): string|array
+    {
+        $data = $this->aesInstance->decrypt(hex2bin($decryptText));
+        return json_decode($data, true) ?? $data;
+    }
+
+    /**
+     * 加密输出base64字符串.
+     */
+    public function encryptBase64(array|string $data): string
+    {
+        $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $data;
+        return base64_encode($this->aesInstance->encrypt($data));
+    }
+
+    /**
+     * 解密Base64字符串.
+     */
+    public function decryptBase64(string $decryptText): string|array
+    {
+        $data = $this->aesInstance->decrypt(base64_decode($decryptText));
+        return json_decode($data, true) ?? $data;
+    }
+}
+
+```
+:::
+
+---
+
 ## 使用
 
 ```php:no-line-numbers
@@ -205,19 +371,44 @@ public function aes(): array
     $iv = 'hello world';
     $ecbEncryptHex = AES::ecbEncryptHex($data, $key, 'AES-128-ECB');
     $ecbDecryptHex = AES::ecbDecryptHex($ecbEncryptHex, $key, 'AES-128-ECB');
-    var_dump($ecbDecryptHex);
+    var_dump($ecbEncryptHex, $ecbDecryptHex);
     $ecbEncryptBase64 = AES::ecbEncryptBase64($data, $key, 'AES-128-ECB');
     $ecbDecryptBase64 = AES::ecbDecryptBase64($ecbEncryptBase64, $key, 'AES-128-ECB');
-    var_dump($ecbDecryptBase64);
+    var_dump($ecbEncryptBase64, $ecbDecryptBase64);
 
     // cbc 加解密
     $cbcEncryptHex = AES::cbcEncryptHex($data, $key, $iv, 'AES-128-CBC');
     $cbcDecryptHex = AES::cbcDecryptHex($cbcEncryptHex, $key, $iv, 'AES-128-CBC');
-    var_dump($cbcDecryptHex);
+    var_dump($cbcEncryptHex, $cbcDecryptHex);
     $cbcEncryptBase64 = AES::cbcEncryptBase64($data, $key, $iv, 'AES-128-CBC');
     $cbcDecryptBase64 = AES::cbcDecryptBase64($cbcEncryptBase64, $key, $iv, 'AES-128-CBC');
-    var_dump($cbcDecryptBase64);
+    var_dump($cbcEncryptBase64, $cbcDecryptBase64);
 
     return $this->result->getResult();
 }
+```
+
+---
+
+```php:no-line-numbers
+#[GetMapping(path: 'seclib/aes')]
+  public function seclibAes(): array
+  {
+      $constructEcb = [
+          'ecb', 128, 'KOQ19sd3_1kaseq/', [],
+      ];
+      $constructCbc = [
+          'cbc', 128, 'KOQ19sd3_1kaseq/', ['iv' => 'hello world'],
+      ];
+      $data = ['key' => 'Aes', 'msg' => '待加密数据'];
+      $aesInstance = new AesWithPHPSeclib(...$constructCbc);
+      $ecbEncryptHex = $aesInstance->encryptHex($data);
+      $ecbDecryptHex = $aesInstance->decryptHex($ecbEncryptHex);
+      var_dump($ecbEncryptHex, $ecbDecryptHex);
+      $ecbEncryptBase64 = $aesInstance->encryptBase64($data);
+      $ecbDecryptBase64 = $aesInstance->decryptBase64($ecbEncryptBase64);
+      var_dump($ecbEncryptBase64, $ecbDecryptBase64);
+
+      return $this->result->getResult();
+  }
 ```

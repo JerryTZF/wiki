@@ -37,7 +37,7 @@ sidebarDepth: 3
 
 ## 封装工具类
 
-::: details
+::: details 查看代码
 ```php:no-line-numbers
 <?php
 

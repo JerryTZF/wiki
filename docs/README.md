@@ -35,7 +35,7 @@ footer: MIT Licensed | Copyright © 2023-present Powered by Vuepress
 
 ---
 
-> 1、点击 [仓库](https://github.com/JerryTZF/vuepress) 克隆项目至本地
+> 1、点击 [仓库](https://github.com/JerryTZF/wiki) 克隆项目至本地
 >
 > 2、安装依赖 `npm install –save-dev`
 >

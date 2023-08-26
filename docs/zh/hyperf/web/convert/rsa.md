@@ -81,3 +81,5 @@ sidebarDepth: 3
 ::: tip 【流程图】
 ![](https://img.tzf-foryou.xyz/img/20230825154528.png)
 :::
+
+## 封装工具类
