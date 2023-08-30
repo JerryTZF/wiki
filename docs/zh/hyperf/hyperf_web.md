@@ -43,7 +43,7 @@ sidebarDepth: 3
 --- 
 
 ::: warning ￣□￣｜｜
-持续施工 :construction: \
+持续施工 :construction:
 1. 计划补齐三方(微信、支付宝、阿里云等)的对接使用示例。
 2. 后续会新增常用的业务功能操作。
 3. 持续勘误。

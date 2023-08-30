@@ -6,8 +6,8 @@ actions:
 - text: 查看概述
   link: /zh/overview
   type: primary
-- text: 项目文档
-  link: /zh/project/overview
+- text: Wiki目录
+  link: /zh/bookindex
   type: secondary
 
 footer: MIT Licensed | Copyright © 2023-present Powered by Vuepress
@@ -23,7 +23,7 @@ footer: MIT Licensed | Copyright © 2023-present Powered by Vuepress
 >
 > 3、该WIKI项目暂无登录相关模块，~~该功能暂时由 `traefik` 的 [BasicAuth](https://doc.traefik.io/traefik/middlewares/http/basicauth/) 中间件提供~~ :(
 >
-> 4、新增、编辑文档需要懂得一些 `markdown` 、 `vuepress` 相关知识，相关文档详见：[vuepress](https://vuepress2.netlify.app/)
+> 4、新增、编辑文档需要懂得一些 `markdown` 、 `vuepress` 相关知识，相关文档详见：[vuepress](https://v2.vuepress.vuejs.org/zh/)
 >
 > 5、`emoji` 相关语法参见 [emoji文档 :rocket:](https://github.com/ikatyang/emoji-cheat-sheet)
 >
