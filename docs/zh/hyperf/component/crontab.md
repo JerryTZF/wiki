@@ -16,7 +16,7 @@ sidebar: [
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 ]
 
-prev: /zh/hyperf/component/event
+prev: /zh/hyperf/component/event/code
 next: /zh/hyperf/component/process
 sidebarDepth: 3
 
