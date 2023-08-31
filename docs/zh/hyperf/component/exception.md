@@ -1,6 +1,9 @@
 ---
 sidebar: [
-{text: '📞 事件机制', link: '/zh/hyperf/component/event'},
+{text: '📞 事件机制', collapsible: true, children: [
+{text: '事件角色和注意事项', link: '/zh/hyperf/component/event/event'},
+{text: '代码示例', link: '/zh/hyperf/component/event/code'},
+]},
 {text: '⏰ 定时任务', link: '/zh/hyperf/component/crontab'},
 {text: '⛓ 自定义进程', link: '/zh/hyperf/component/process'},
 {text: '📝 文件系统', link: '/zh/hyperf/component/filesystem'},
