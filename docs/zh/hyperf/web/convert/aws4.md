@@ -21,7 +21,6 @@ sidebar: [
 {'text': 'AWS4', link: '/zh/hyperf/web/convert/aws4'},
 {'text': 'RC4', link: '/zh/hyperf/web/convert/rc4'},
 ]},
-{text: 'GuzzleHttp', 'link': '/zh/hyperf/web/guzzle'}
 ]
 
 prev: /zh/hyperf/web/convert/rsa

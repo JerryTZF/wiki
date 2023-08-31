@@ -11,8 +11,11 @@ sidebar: [
 {text: '限流器', link: '/zh/hyperf/component/limit'},
 {text: '异步Task', link: '/zh/hyperf/component/task'},
 ]
+
+prev: /zh/hyperf/component/crontab
+next: /zh/hyperf/component/filesystem
 sidebarDepth: 3
 
 ---
 
-# 常用组件
+# 自定义进程

@@ -11,8 +11,11 @@ sidebar: [
 {text: '限流器', link: '/zh/hyperf/component/limit'},
 {text: '异步Task', link: '/zh/hyperf/component/task'},
 ]
+
+prev: /zh/hyperf/component/process
+next: /zh/hyperf/component/cache
 sidebarDepth: 3
 
 ---
 
-# 常用组件
+# 文件系统
