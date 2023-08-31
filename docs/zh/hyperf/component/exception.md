@@ -13,10 +13,10 @@ sidebar: [
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 ]
 
-prev: /zh/hyperf/component/limit
-next: /zh/hyperf/component/exception
+prev: /zh/hyperf/component/task
+next: /zh/hyperf/hyperf_component
 sidebarDepth: 3
 
 ---
 
-# 异步Task
+# 异常处理器
