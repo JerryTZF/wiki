@@ -28,6 +28,12 @@ sidebarDepth: 3
 目录
 [[TOC]]
 
+## 安装依赖(默认已安装)
+
+```shell:no-line-numbers
+composer require hyperf/event
+```
+
 ## 慢日志监听器
 
 :::details 查看代码

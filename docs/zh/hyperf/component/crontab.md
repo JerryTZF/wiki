@@ -36,7 +36,7 @@ sidebarDepth: 3
 
 ## 安装依赖
 
-```php:no-line-numbers
+```shell:no-line-numbers
 composer require hyperf/crontab
 ```
 
@@ -67,3 +67,56 @@ return [
     'enable' => true,
 ];
 ```
+
+## 定义任务
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+
+namespace App\Scheduler;
+
+use App\Lib\Log\Log;
+use Carbon\Carbon;
+use Hyperf\Crontab\Annotation\Crontab;
+
+#[Crontab(
+    rule: '\/10 * * * * *',
+    name: 'DemoScheduler',
+    onOneServer: true,
+    callback: 'execute',
+    memo: '测试定时任务',
+    enable: 'isEnable',
+)]
+class DemoScheduler
+{
+    public function execute(): void
+    {
+        Log::stdout()->info(Carbon::now()->toDateTimeString());
+    }
+
+    public function isEnable(): bool
+    {
+        return \Hyperf\Support\env('APP_ENV', 'dev') === 'dev';
+    }
+}
+
+```
+
+::: warning 【注意】
+
+- 注解字段请参考：[任务属性](https://hyperf.wiki/3.0/#/zh-cn/crontab?id=%e4%bb%bb%e5%8a%a1%e5%b1%9e%e6%80%a7)
+- 注意在注解定义时，规则存在 `\` 符号时，需要进行转义处理，即填写 `*\/5 * * * * *`
+:::
+
+---
+
+## 消费失败
+
+:::tip (￣▽￣)"
+> 组件提供了 `FailToExecute` 事件，编写对应的监听器即可。
+
+[定时任务异常监听器](/zh/hyperf/component/event/code.md#定时任务异常监听器)
+:::
+
