@@ -35,3 +35,17 @@ sidebar: [
 - [导出Excel相关](/zh/hyperf/web/office/excel.md)
 - [导出Csv相关](/zh/hyperf/web/office/csv.md)
 
+### Hyperf-Component 常用组件
+
+- [事件机制](/zh/hyperf/component/event/event.md)
+- [事件机制代码示例](/zh/hyperf/component/event/code.md)
+- [定时任务](/zh/hyperf/component/crontab.md)
+- [自定义进程](/zh/hyperf/component/process.md)
+- [文件系统](/zh/hyperf/component/filesystem.md)
+- [缓存系统](/zh/hyperf/component/cache.md)
+- [异步队列](/zh/hyperf/component/queue.md)
+- [信号处理器](/zh/hyperf/component/signal.md)
+- [http](/zh/hyperf/component/guzzle.md)
+- [限流器](/zh/hyperf/component/limit.md)
+- [异步Task](/zh/hyperf/component/task.md)
+- [异常处理器](/zh/hyperf/component/exception.md)
