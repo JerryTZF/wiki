@@ -74,12 +74,22 @@ return [
 <?php
 
 declare(strict_types=1);
+/**
+ * This file is part of Hyperf.
+ *
+ * @link     https://www.hyperf.io
+ * @document https://hyperf.wiki
+ * @contact  group@hyperf.io
+ * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
+ */
 
 namespace App\Scheduler;
 
+use App\Exception\SchedulerException;
 use App\Lib\Log\Log;
 use Carbon\Carbon;
 use Hyperf\Crontab\Annotation\Crontab;
+use Throwable;
 
 #[Crontab(
     rule: '\/10 * * * * *',
@@ -93,7 +103,16 @@ class DemoScheduler
 {
     public function execute(): void
     {
-        Log::stdout()->info(Carbon::now()->toDateTimeString());
+        try {
+            // 模拟异常
+            // 就算不写try-catch-finally底层有触发器触发异常, 会被外部监听器监听到
+            $a = 1 / 0; 
+            Log::stdout()->info(Carbon::now()->toDateTimeString());
+        } catch (Throwable $e) {
+            Log::stdout()->error($e->getMessage());
+        } finally {
+            Log::stdout()->info('本周期任务结束 !!!');
+        }
     }
 
     public function isEnable(): bool
@@ -101,7 +120,6 @@ class DemoScheduler
         return \Hyperf\Support\env('APP_ENV', 'dev') === 'dev';
     }
 }
-
 ```
 
 ::: warning 【注意】
@@ -112,7 +130,7 @@ class DemoScheduler
 
 ---
 
-## 消费失败
+## 执行失败
 
 :::tip (￣▽￣)"
 > 组件提供了 `FailToExecute` 事件，编写对应的监听器即可。
