@@ -17,10 +17,10 @@ sidebar: [
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
 ]
 
-prev: /zh/hyperf/component/guzzle
-next: /zh/hyperf/component/task
+prev: /zh/hyperf/hyperf_component
+next: /zh/hyperf/component/exception
 sidebarDepth: 3
 
 ---
 
-# 限流器
+# 日志

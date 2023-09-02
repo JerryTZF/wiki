@@ -36,6 +36,16 @@ export default defineUserConfig({
                     {text: '规范相关', link: '/zh/hyperf/hyperf_standard'},
                 ]
             },
+            {
+                text: '知识体系', children: [
+                    {text: '💻 工作流', link: '/zh/knowledge/workflow'},
+                    {text: '🔧 常用工具', link: '/zh/knowledge/tools'},
+                    {text: '💿 服务器', link: '/zh/knowledge/linux'},
+                    {text: '📦 容器相关', link: '/zh/knowledge/container'},
+                    {text: '♨️ 编程语言', link: '/zh/knowledge/language'},
+                ]
+            },
+            {text: '咖啡屋', link: '/zh/knowledge/overview'},
             {text: 'Github', link: 'https://github.com/JerryTZF/wiki'},
         ],
 
