@@ -22,5 +22,6 @@ sidebarDepth: 3
 # 常用组件
 
 ::: warning 【说明】🛠
-所有组件基于 <Badge type="tip" text="Hyperf v3.x" vertical="middle" />，且会针对组件的使用和注意点进行总结。
+所有组件基于 <Badge type="tip" text="Hyperf v3.x" vertical="middle" />，且会针对组件的使用和注意点进行总结。 \
+后续组件更新或者用法有变更，会同步相关内容。（づ￣3￣）づ╭❤～
 :::

@@ -49,6 +49,69 @@ composer require hyperf/flysystem-oss
 
 ---
 
+## 组件异常处理
+
+***异常捕获器***
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+namespace App\Exception\Handler;
+
+use App\Constants\SystemCode;
+use Hyperf\ExceptionHandler\ExceptionHandler;
+use Hyperf\Filesystem\Exception\InvalidArgumentException;
+use Hyperf\HttpMessage\Stream\SwooleStream;
+use League\Flysystem\FilesystemException;
+use OSS\Core\OssException;
+use Psr\Http\Message\ResponseInterface;
+use Throwable;
+
+class FileSystemExceptionHandler extends ExceptionHandler
+{
+    public function handle(Throwable $throwable, ResponseInterface $response): ResponseInterface
+    {
+        $this->stopPropagation();
+
+        return $response->withHeader('Content-Type', 'application/json')
+            ->withStatus(200)->withBody(new SwooleStream(json_encode([
+                'code' => SystemCode::FILE_SYSTEM_ERR,
+                'msg' => SystemCode::getMessage(SystemCode::FILE_SYSTEM_ERR, [$throwable->getMessage()]),
+                'status' => false,
+                'data' => [],
+            ], JSON_UNESCAPED_UNICODE)));
+    }
+
+    // 不同的适配器都有自己的对应的异常类, 请根据你的需求判断
+    public function isValid(Throwable $throwable): bool
+    {
+        return $throwable instanceof InvalidArgumentException
+        || $throwable instanceof FilesystemException || $throwable instanceof OssException;
+    }
+}
+
+```
+
+***注册异常***
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+return [
+    'handler' => [
+        'http' => [
+            ...
+            // 文件系统异常捕获
+            App\Exception\Handler\FileSystemExceptionHandler::class,
+            ...
+        ],
+    ],
+];
+
+```
+
 ## 封装文件系统
 
 ::: details 查看代码
