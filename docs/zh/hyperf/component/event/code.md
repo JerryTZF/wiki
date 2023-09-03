@@ -257,3 +257,27 @@ class ConsumerProcessListener implements ListenerInterface
 ```
 :::
 
+---
+
+## 系统级别监听器
+
+::: tip 【规范】
+一般系统(或底层)提供的监听器在配置中注册, 除非你要复写它, 否则你应该直接在配置中注册, 而不是通过注解注册。
+:::
+
+> config/autoload/listeners.php
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+return [
+    // 框架提供了 error_reporting() 错误级别的监听器
+    Hyperf\ExceptionHandler\Listener\ErrorExceptionHandler::class,
+    // 命令行执行异常监听器
+    Hyperf\Command\Listener\FailToHandleListener::class,
+    // 队列长度信息监听器
+    Hyperf\AsyncQueue\Listener\QueueLengthListener::class,
+];
+
+```
