@@ -10,7 +10,8 @@ actions:
   link: /zh/bookindex
   type: secondary
 
-footer: MIT Licensed | Copyright © 2023-present Powered by Vuepress
+footer: '<p><img src="http://img.tzf-foryou.xyz/img/20220317093530.png"> <a class="banquan" style="color:#000;" href="https://beian.miit.gov.cn/#/Integrated/recordQuery" target="_blank">粤ICP备17101923号</a></p><hr /> MIT Licensed | Copyright © 2023-present Powered by Vuepress'
+footerHtml: true
 ---
 
 ## 使用说明
