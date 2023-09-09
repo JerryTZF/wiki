@@ -20,10 +20,10 @@ sidebar: [
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
 ]
 
-prev: /zh/hyperf/component/signal
-next: /zh/hyperf/component/limit
+prev: /zh/hyperf/component/queue/overview
+next: /zh/hyperf/component/signal
 sidebarDepth: 3
 
 ---
 
-# http
+# 队列注意事项
