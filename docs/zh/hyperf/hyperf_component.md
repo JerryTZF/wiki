@@ -12,6 +12,7 @@ sidebar: [
 {text: '队列使用', link: '/zh/hyperf/component/queue/overview'},
 {text: '注意事项', link: '/zh/hyperf/component/queue/info'},
 ]},
+{text: '🚦 信号处理器', link: '/zh/hyperf/component/signal'},
 {text: '📤 http', link: '/zh/hyperf/component/guzzle'},
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
 {text: '📮 异步Task', link: '/zh/hyperf/component/task'},
