@@ -9,11 +9,9 @@ sidebar: [
 {text: '施工计划 🚧', link: '/zh/construction'},
 ]
 
+prev: /zh/bookindex/hyperf_component
+next: /zh/bookindex/hyperf_standard
+
 ---
 
-
-## 目录
-
-::: tip 【目录】
-所有文档的目录 (づ｡◕‿‿◕｡)づ
-:::
+# Hyperf-Skill 使用技巧
