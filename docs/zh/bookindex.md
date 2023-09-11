@@ -15,5 +15,6 @@ sidebar: [
 ## 目录
 
 ::: tip 【目录】
-所有文档的目录 (づ｡◕‿‿◕｡)づ
+所有文档的目录 (づ｡◕‿‿◕｡)づ \
+文档中的代码示例地址：[Github](https://github.com/JerryTZF/hyperf-v3)
 :::

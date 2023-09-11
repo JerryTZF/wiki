@@ -39,7 +39,7 @@ sidebar: false
 
 ### 关于我(Jerry)
 
-> 一个 `理想主义` 的 后端开发，平时工作主要基于Swoole、Hyperf。喜欢捣鼓下 `Go`、`Python`等。
+> 一个 ~~`理想主义`~~ 的 后端开发，平时工作主要基于Swoole、Hyperf。喜欢捣鼓下 `Go`、`Python`等。
 >
 > PS：喜欢 `打赌` 和 `讲道理`
 
