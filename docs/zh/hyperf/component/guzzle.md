@@ -40,7 +40,7 @@ sidebarDepth: 3
 
 > [标准库地址](https://packagist.org/packages/hyperf/guzzle)
 
-```php:no-line-numbers
+```shell:no-line-numbers
 composer require hyperf/guzzle
 ```
 

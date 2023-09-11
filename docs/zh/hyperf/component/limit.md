@@ -27,3 +27,33 @@ sidebarDepth: 3
 ---
 
 # 限流器
+
+目录
+[[TOC]]
+
+::: tip
+详情参见：[限流器](https://hyperf.wiki/3.0/#/zh-cn/rate-limit)
+:::
+
+## 安装依赖
+
+> [标准库地址](https://packagist.org/packages/hyperf/rate-limit)
+
+```shell:no-line-numbers
+composer require hyperf/rate-limit
+``` 
+
+## 使用
+
+```php:no-line-numbers
+#[GetMapping(path: 'rate/limit')]
+#[RateLimit(create: 10, consume: 5, capacity: 50)]
+public function rateLimit(): array
+{
+    return $this->result->setData([
+        'QPS' => 5,
+        'CREATE TOKEN PER SECOND' => 10,
+        'CAPACITY' => 50,
+    ])->getResult();
+}
+```
