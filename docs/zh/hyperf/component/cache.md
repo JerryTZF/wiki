@@ -15,13 +15,12 @@ sidebar: [
 {text: '🚦 信号处理器', link: '/zh/hyperf/component/signal'},
 {text: '📤 GuzzleHttp', link: '/zh/hyperf/component/guzzle'},
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
-{text: '📮 异步Task', link: '/zh/hyperf/component/task'},
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
 ]
 
 prev: /zh/hyperf/component/filesystem
-next: /zh/hyperf/component/queue
+next: /zh/hyperf/component/queue/overview
 sidebarDepth: 3
 
 ---

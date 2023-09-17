@@ -30,6 +30,5 @@ next: /zh/bookindex/hyperf_skill
 - [信号处理器](/zh/hyperf/component/signal.md)
 - [http](/zh/hyperf/component/guzzle.md)
 - [限流器](/zh/hyperf/component/limit.md)
-- [异步Task](/zh/hyperf/component/task.md)
 - [异常处理器](/zh/hyperf/component/exception.md)
 - [日志系统](/zh/hyperf/component/log.md)
