@@ -14,14 +14,19 @@ sidebar: [
 {text: '语言相关', link: '/zh/bookindex/language'},
 ]},
 ]
-
-prev: /zh/bookindex/hyperf_component
-next: /zh/bookindex/hyperf_standard
-
+prev: /zh/bookindex/hyperf_standard
+next: /zh/bookindex/tools
 ---
 
-# Hyperf-Skill 使用技巧
+# Work-Flow 工作流
 
-- [服务重启](/zh/hyperf/hyperf_skill.html#关于服务重启)
-- [Swoole和php-fpm区别](/zh/hyperf/hyperf_skill.html#swoole-和-php-fpm)
-- [服务使用类别](/zh/hyperf/hyperf_skill.html#服务的使用类别)
+
+- [需求排期](/zh/knowledge/workflow.html#需求排期)
+- [需求评审](/zh/knowledge/workflow.html#需求评审)
+- [编码实现](/zh/knowledge/workflow.html#编码实现)
+- [联调](/zh/knowledge/workflow.html#联调)
+- [用例测试](/zh/knowledge/workflow.html#用例测试)
+- [CodeReview](/zh/knowledge/workflow.html#CR)
+- [灰度](/zh/knowledge/workflow.html#灰度-冒烟测试)
+- [发布](/zh/knowledge/workflow.html#发布)
+- [复盘](/zh/knowledge/workflow.html#复盘)
