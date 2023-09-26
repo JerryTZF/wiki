@@ -28,7 +28,6 @@ sidebar: [
 ]},
 {text: '🌈 杂项', collapsible: true, children: [
 {text: '列表', 'link': '/zh/knowledge/sundry/picgo'},
-
 ]}
 ]
 

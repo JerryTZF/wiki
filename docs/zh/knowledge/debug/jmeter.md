@@ -27,8 +27,7 @@ sidebar: [
 {text: 'Iterm2', 'link': '/zh/knowledge/mac/iterm2'},
 ]},
 {text: '🌈 杂项', collapsible: true, children: [
-{text: '列表', 'link': '/zh/knowledge/tools/picgo'},
-
+{text: '列表', 'link': '/zh/knowledge/sundry/picgo'},
 ]}
 ]
 
