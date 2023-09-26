@@ -32,11 +32,9 @@ sidebar: [
 ]}
 ]
 
+prev: /zh/knowledge/tools
+next: /zh/knowledge/git/multiple
+
 ---
 
-# 常用工具
-
-::: tip 说明
-这里记录了我工作中使用频率最高的一些工具，包括但不限于使用技巧和方法。\
-除了工作中的一些工具，还有一些好用的其他工具。主要基于 `MacOS` 系统。
-:::
+# 秘钥配置和使用

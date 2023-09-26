@@ -27,16 +27,13 @@ sidebar: [
 {text: 'Iterm2', 'link': '/zh/knowledge/mac/iterm2'},
 ]},
 {text: '🌈 杂项', collapsible: true, children: [
-{text: '列表', 'link': '/zh/knowledge/tools/picgo'},
+{text: '列表', 'link': '/zh/knowledge/sundry/picgo'},
 
 ]}
 ]
 
+prev: /zh/knowledge/mac/iterm2
+next: /zh/knowledge/tools
 ---
 
-# 常用工具
-
-::: tip 说明
-这里记录了我工作中使用频率最高的一些工具，包括但不限于使用技巧和方法。\
-除了工作中的一些工具，还有一些好用的其他工具。主要基于 `MacOS` 系统。
-:::
+# 列表
