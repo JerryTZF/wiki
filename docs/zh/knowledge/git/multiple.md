@@ -36,3 +36,57 @@ next: /zh/knowledge/git/cooperation
 ---
 
 # 多平台多仓库使用
+
+目录
+[[TOC]]
+
+::: tip 场景
+自己的项目和公司的项目可能并不在一个托管平台，但是需要在一台机器上进行开发。
+:::
+
+---
+
+一、 创建不同托管平台的秘钥对。
+
+```shell:no-line-numbers
+ssh-keygen -t ed25519 -C "JerryTZF@github.com" -f ~/.ssh/id_github
+ssh-keygen -t ed25519 -C "JerryTZF@gitlab.com" -f ~/.ssh/id_gitlab
+ssh-keygen -t ed25519 -C "JerryTZF@gitee.com" -f ~/.ssh/id_gitee
+```
+
+二、将不同平台的私钥加入ssh-agent
+
+```shell:no-line-numbers
+ssh-add ~/.ssh/id_github
+ssh-add ~/.ssh/id_gitlab
+ssh-add ~/.ssh/id_gitee
+```
+
+三、编写配置文件
+
+```shell:no-line-numbers
+vim ~/.ssh/config
+```
+
+```yaml:no-line-numbers
+# company
+Host gitee.com
+HostName gitee.com
+User JerryTZF
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_company
+
+# myself
+Host github.com
+HostName github.com
+User JerryTZF
+PreferredAuthentications publickey
+IdentityFile ~/.ssh/id_myself
+```
+
+四、测试
+
+```shell:no-line-numbers
+ssh -T git@github.com
+ssh -T git@gitee.com
+```

@@ -36,3 +36,5 @@ next: /zh/knowledge/idea/keymap
 ---
 
 # 其他
+
+- [github官方文档](https://docs.github.com/zh/authentication)

@@ -37,3 +37,31 @@ next: /zh/knowledge/git/multiple
 ---
 
 # 秘钥配置和使用
+
+目录
+[[TOC]]
+
+## 创建秘钥
+
+```shell:no-line-numbers
+ssh-keygen -t ed25519 -C "test@test.com" -f ~/.ssh/id_for_github_test
+```
+
+## 配置秘钥
+
+1. 打开 [ssh配置页面](https://github.com/settings/keys), 并创建新的ssh秘钥。
+2. 将创建的 `~/.ssh/id_for_github_test.pub` 内容粘贴，并保存。
+3. 本地添加高速缓存, 后续配合多平台多仓库使用 `ssh-add ~/.ssh/id_ed25519`
+
+---
+
+![](https://img.tzf-foryou.xyz/img/20231016114341.png)
+
+## 验证秘钥
+
+```shell:no-line-numbers
+ssh -T git@github.com
+
+// 将会得到如下信息:
+Hi JerryTZF! You've successfully authenticated, but GitHub does not provide shell access.
+```
