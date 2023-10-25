@@ -36,3 +36,26 @@ next: /zh/knowledge/git/others
 ---
 
 # 常见场景和对策
+
+目录
+[[TOC]]
+
+## 提交了不想提交的文件，如何移除版本库中的该文件
+
+> 例如 `.idea` 、`.DS_Store` 等文件。
+
+```shell:no-line-numbers
+# 1. 更新下本地仓库
+git pull origin branch
+# 2. 删除本地项目目录的缓存
+git rm -r --cached .
+# 3. 编辑.gitignore需要忽略的文件
+# 4. 再次添加文件
+git add .
+# 5. 提交
+git commit -m "add .gitignore"
+# 6. 推送代码
+git push origin branch
+```
+
+## 合并冲突

@@ -70,11 +70,11 @@ next: /zh/knowledge/git/qa
 
 ---
 
-1. 从master分支拉取自己的feature分支，在此分支进行日常开发。
-2. 请时刻保证自己本地的master、develop、release、feature处于最新版本。(勤拉取更新代码，合并前保证最新版本)
-3. 自己的feature分支开发新功能。
-4. 将feature分支合并到develop分支，推送develop分支到远端。
-5. 在develop分支进行测试代码，有问题重复4、5步骤，直至无问题。
-6. 将feature分支合并到release分支(有冲突解决冲突)，推送release分支，进行预发布测试。
-7. 在release分支进行预发布测试，有问题重复6、7步骤，直至无问题。
-8. 提PR(MR)，从release分支往master分支合并。
+1. 从 master 分支拉取自己的feature分支，在此分支进行日常开发。
+2. 请时刻保证自己本地的 master 、 develop 、 release 、 feature 处于最新版本。(勤拉取更新代码，合并前保证最新版本)
+3. 自己的 feature 分支开发新功能。
+4. 将 feature 分支合并到 develop 分支，推送 develop 分支到远端。
+5. 在 develop 分支进行测试代码，有问题重复4、5步骤，直至无问题。
+6. 将 feature 分支合并到 release 分支(有冲突解决冲突)，推送 release 分支，进行预发布测试。
+7. 在 release 分支进行预发布测试，有问题重复6、7步骤，直至无问题。
+8. 提PR(MR)，从 release 分支往 master 分支合并。
