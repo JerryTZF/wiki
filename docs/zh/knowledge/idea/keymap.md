@@ -36,3 +36,80 @@ next: /zh/knowledge/idea/vcs
 ---
 
 # 快捷键
+
+> 常用快捷键操作(变更为自己适用的) 
+
+**全局查找**
+```text:no-line-numbers
+setting->keymap->mainmune->edit->find->find in path 改为: alt+f
+```
+
+**全局根据文件名查找对应文件**
+```text:no-line-numbers
+mainmune->navigate->file 改为: alt+n
+```
+
+**上一步**
+```text:no-line-numbers
+mainmune->navigate->back 改为: alt+b
+```
+
+**下一步**
+```text:no-line-numbers
+mainmune->navigate->forward 改为: alt+a
+```
+
+**关闭当前文件**
+```text:no-line-numbers
+mainmune->windows->editor tabs->close 改为: alt+d
+```
+
+**直接跳转到错误的地方**
+```text:no-line-numbers
+shift+F2
+```
+
+**快速搜索该类中所有的成员变量和成员方法**
+```text:no-line-numbers
+alt+F12
+```
+
+**替换当前文件中指定的内容**
+```text:no-line-numbers
+ctrl+r
+```
+
+**折叠当前代码块**
+```text:no-line-numbers
+ctrl + `-`	打开  ctrl + `+`
+```
+
+**打开当前项目所在的目录**
+```text:no-line-numbers
+ctrl + alt + F12
+```
+
+**打开当前类的所有方法**
+```text:no-line-numbers
+ctrl+shift+	'+'
+```
+
+**折叠当前类的所有方法**
+```text:no-line-numbers
+Ctrl+shift+	'-'  ；然后 Ctrl +  '+'
+```
+
+**多行光标**
+```text:no-line-numbers
+多行光标 Alt + 鼠标左键(多次点击即可)
+```
+
+**选中代码块大小写变更**
+```text:no-line-numbers
+CTRL+SHIFT+U
+```
+
+**数组对齐**
+```text:no-line-numbers
+PhpStorm > Preference > Editor > Code Style > PHP > Wrapper and Braces > Align key-value pairs
+```
