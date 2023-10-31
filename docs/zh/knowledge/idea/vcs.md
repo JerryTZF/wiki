@@ -68,9 +68,9 @@ next: /zh/knowledge/idea/theme
 图示：
 ![](https://img.tzf-foryou.xyz/img/20231031164303.png)
 
-## cherry-pick优选
-
 ## 指定文件和指定分支做对比
+
+## cherry-pick优选
 
 ## 指定文件提交历史
 
