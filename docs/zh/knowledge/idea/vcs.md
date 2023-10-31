@@ -78,8 +78,16 @@ next: /zh/knowledge/idea/theme
 
 ## cherry-pick优选
 
+> cherry-pick 简单说就是将一个分支上的一个或多个commit合并到另一个分支。
+
+
+
 ## 指定文件提交历史
 
 > 右击->git->显示历史记录
 
 ## 回退版本
+
+> 选中对应分支，然后选中要回退的提交，回退即可。图示：
+
+![](https://img.tzf-foryou.xyz/img/20231031170855.png)
