@@ -67,6 +67,8 @@ next: /zh/knowledge/idea/theme
 
 图示：
 ![](https://img.tzf-foryou.xyz/img/20231031164303.png)
+![](https://img.tzf-foryou.xyz/img/20231031165531.png)
+![](https://img.tzf-foryou.xyz/img/20231031165618.png)
 
 ## 指定文件和指定分支做对比
 
