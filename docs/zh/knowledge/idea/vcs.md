@@ -36,3 +36,31 @@ next: /zh/knowledge/idea/theme
 ---
 
 # VCS操作
+
+目录
+[[TOC]]
+
+## 拉取代码
+
+> 该操作不会合并。除非本地有提交。 \
+> git -c core.quotepath=false -c log.showSignature=false fetch origin --recurse-submodules=no --progress --prune
+
+![](https://img.tzf-foryou.xyz/img/20231031152638.png)
+
+## 推送代码
+
+> 提交和合并说明 
+
+- 点击右上角 :white_check_mark: 提交按钮。
+- 左侧出现对话框，勾选要提交和推送的文件。
+- 点击右侧 "提交并推送"。
+
+## 合并代码
+
+## cherry-pick优选
+
+## 指定文件和指定分支做对比
+
+## 指定文件提交历史
+
+## 回退版本
