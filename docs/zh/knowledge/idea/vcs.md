@@ -61,7 +61,14 @@ next: /zh/knowledge/idea/theme
 
 ## 合并代码
 
-演示VCS合并代码
+> 演示：dev 分支代码合并到 master 。 
+
+- 切换到 master 分支。
+- 菜单栏选择：git->merge->选择指定分支->合并->解决冲突->应用->推送合并提交。
+
+图示：
+![](https://img.tzf-foryou.xyz/img/20231031163431.png)
+
 
 ## cherry-pick优选
 
