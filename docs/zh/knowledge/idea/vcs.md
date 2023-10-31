@@ -57,7 +57,6 @@ next: /zh/knowledge/idea/theme
 - 推送前，建议对比下差异。
 
 ---
-![](https://img.tzf-foryou.xyz/img/20231031162322.png)
 
 ## 合并代码
 
@@ -67,10 +66,9 @@ next: /zh/knowledge/idea/theme
 - 菜单栏选择：git->merge->选择指定分支->合并->解决冲突->应用->推送合并提交。
 
 图示：
-![](https://img.tzf-foryou.xyz/img/20231031163431.png)
+![](https://img.tzf-foryou.xyz/img/20231031164303.png)
 
-测试
-
+## cherry-pick优选
 
 ## 指定文件和指定分支做对比
 
