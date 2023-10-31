@@ -45,7 +45,7 @@ next: /zh/knowledge/idea/theme
 > 该操作不会合并。除非本地有提交。 \
 > git -c core.quotepath=false -c log.showSignature=false fetch origin --recurse-submodules=no --progress --prune
 
-![](https://img.tzf-foryou.xyz/img/20231031152638.png)
+![](https://img.tzf-foryou.xyz/img/20231031152631.png)
 
 ## 推送代码
 
