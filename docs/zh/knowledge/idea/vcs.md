@@ -66,7 +66,7 @@ next: /zh/knowledge/idea/theme
 - 菜单栏选择：git->merge->选择指定分支->合并->解决冲突->应用->推送合并提交。
 
 图示：
-![](https://img.tzf-foryou.xyz/img/20231031164301.png)
+![](https://img.tzf-foryou.xyz/img/20231031164303.png)
 
 ## cherry-pick优选对比
 
