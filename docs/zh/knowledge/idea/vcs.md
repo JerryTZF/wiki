@@ -72,8 +72,14 @@ next: /zh/knowledge/idea/theme
 
 ## 指定文件和指定分支做对比
 
+> 右击->git->与分支作比较->选择分支
+
+![](https://img.tzf-foryou.xyz/img/20231031165931.png)
+
 ## cherry-pick优选
 
 ## 指定文件提交历史
+
+> 右击->git->显示历史记录
 
 ## 回退版本
