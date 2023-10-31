@@ -78,8 +78,15 @@ next: /zh/knowledge/idea/theme
 
 ## cherry-pick优选
 
-> cherry-pick 简单说就是将一个分支上的一个或多个commit合并到另一个分支。
+::: tip
+- cherry-pick 简单说就是将一个分支上的一个或多个commit合并到另一个分支。
+- 示例是 dev 分支合并 main 几个提交到 dev 分支。
+- 合并的过程中也会出现冲突，解决方案和 👆🏻 的合并代码一致。
+:::
 
+---
+
+![](https://img.tzf-foryou.xyz/img/20231031171450.png)
 
 
 ## 指定文件提交历史
