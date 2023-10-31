@@ -54,8 +54,14 @@ next: /zh/knowledge/idea/theme
 - 点击右上角 :white_check_mark: 提交按钮。
 - 左侧出现对话框，勾选要提交和推送的文件。
 - 点击右侧 "提交并推送"。
+- 推送前，建议对比下差异。
+
+---
+![](https://img.tzf-foryou.xyz/img/20231031162322.png)
 
 ## 合并代码
+
+
 
 ## cherry-pick优选
 
