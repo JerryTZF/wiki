@@ -57,6 +57,8 @@ next: /zh/knowledge/idea/theme
 
 ## 合并代码
 
+演示VCS合并代码
+
 ## cherry-pick优选
 
 ## 指定文件和指定分支做对比
