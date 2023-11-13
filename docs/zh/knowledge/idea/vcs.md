@@ -84,6 +84,10 @@ next: /zh/knowledge/idea/theme
 - 合并的过程中也会出现冲突，解决方案和 👆🏻 的合并代码一致。
 :::
 
+::: warning 【注意】
+[cherry-pick 陷阱](https://cloud.tencent.com/developer/article/2356684)
+:::
+
 ---
 
 ![](https://img.tzf-foryou.xyz/img/20231031171450.png)

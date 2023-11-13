@@ -16,7 +16,6 @@ footerHtml: true
 
 ## 使用说明
 
----
 
 > 1、搜索快捷键 `/` 或者 `s` 即可将光标移动至搜索框
 >
@@ -34,7 +33,6 @@ footerHtml: true
 
 ## 维护说明
 
----
 
 > 1、点击 [仓库](https://github.com/JerryTZF/wiki) 克隆项目至本地
 >
@@ -48,7 +46,6 @@ footerHtml: true
 
 ## 搜索说明
 
----
 
 > 1、有些内容不会展示在对应的`sidebar` 或者 `navbar` 中，可以通过搜索来找到你想要的内容
 >
