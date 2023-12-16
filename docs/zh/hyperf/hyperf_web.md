@@ -1,5 +1,9 @@
 ---
 sidebar: [
+{text: '🚀 接口文档', collapsible: true, children: [
+{'text': '登录相关', link: '/zh/hyperf/api/login'},
+{'text': '角色相关', link: '/zh/hyperf/api/role'},
+]},
 {text: '🖼 图像相关', collapsible: true, children: [
 {'text': '二维码', link: '/zh/hyperf/web/image/qrcode'},
 {'text': '条形码', link: '/zh/hyperf/web/image/barcode'},
@@ -26,9 +30,9 @@ sidebar: [
 sidebarDepth: 3
 ---
 
-[[toc]]
-
 # web常规使用
+
+## 说明
 
 ::: tip 【说明】
 这里主要列举我开发(WEB)过程中一些常规的操作，和一些自己封装的组件。都是基于 **[Hyperf](https://hyperf.wiki/3.0/)** 框架 。\
@@ -39,7 +43,43 @@ sidebarDepth: 3
 > 所有的代码示例均在 [这里](https://github.com/JerryTZF/hyperf-v3/blob/main/app/Controller/TestListController.php) 。
 :::
 
+---
+
+## API接口说明
+
+::: tip 【注意】
+**示例接口文档** 中API真实可调。 个人服务器演示所用，请勿压测，谢谢。 🙏 \
+**Host**: `aHR0cHM6Ly9hcGkudHpmLWZvcnlvdS54eXo=`
+:::
+
+> Http状态码说明：
+
+:::: code-group
+::: code-group-item 200
+```text:no-line-numbers
+业务正常或者业务异常, 服务此时正常服务
+```
+:::
+::: code-group-item 422
+```text:no-line-numbers
+表单验证不通过。
+```
+:::
+::: code-group-item 401
+```text:no-line-numbers
+权限验证不通过。
+```
+:::
+::: code-group-item 500
+```text:no-line-numbers
+服务器异常，但是仍然可以提供服务，不影响其他服务调用。
+```
+:::
+::::
+
 --- 
+
+## 补充
 
 ::: warning ￣□￣｜｜
 持续施工 :construction:
