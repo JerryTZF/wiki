@@ -98,10 +98,10 @@ class Barcode
     public function __construct(array $config = [])
     {
         $this->generator = new BarcodeGeneratorPNG();
-        $this->barType = $config['bar_type'] ?? $this->generator::TYPE_CODE_128;
-        $this->width = $config['width'] ?? 1;
-        $this->height = $config['height'] ?? 50;
-        $this->foregroundColor = $config['foreground_color'] ?? [0, 0, 0];
+        $this->barType = isset($config['bar_type']) && $config['bar_type'] !== '' ? $config['bar_type'] : $this->generator::TYPE_CODE_128;
+        $this->width = isset($config['width']) ? intval($config['width']) : 1;
+        $this->height = isset($config['height']) ? intval($config['height']) : 50;
+        $this->foregroundColor = isset($config['foreground_color']) ? array_map('intval', $config['foreground_color']) : [0, 0, 0];
         $this->path = $config['path'] ?? BASE_PATH . '/runtime/barcode/';
 
         if (! is_dir($this->path)) {
@@ -111,6 +111,8 @@ class Barcode
 
     /**
      * 获取条形码字符串.
+     * @param string $content 字符串内容
+     * @return string 文件流字符串
      */
     public function getStream(string $content = ''): string
     {
@@ -119,6 +121,8 @@ class Barcode
 
     /**
      * 保存条码到本地.
+     * @param string $filename 文件名
+     * @param string $content 文件流字符串
      */
     public function move(string $filename, string $content = ''): void
     {

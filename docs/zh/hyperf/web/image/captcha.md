@@ -55,15 +55,28 @@ composer require gregwar/captcha
 declare(strict_types=1);
 namespace App\Lib\Image;
 
-use App\Lib\Redis\Redis;
 use Gregwar\Captcha\CaptchaBuilder;
 use Gregwar\Captcha\PhraseBuilder;
+use Hyperf\Context\ApplicationContext;
+use Hyperf\Redis\Redis;
 
 class Captcha
 {
     /**
+     * redis 实例.
+     * @var mixed|Redis Redis实例
+     */
+    private Redis $redis;
+
+    public function __construct()
+    {
+        $this->redis = ApplicationContext::getContainer()->get(Redis::class);
+    }
+
+    /**
      * 获取验证
      * @param string $clientUniqueCode 不同的客户端使用不同的唯一标识
+     * @return string 文件流字符串
      */
     public function getStream(string $clientUniqueCode): string
     {
@@ -75,23 +88,23 @@ class Captcha
         $builder->build();
         // 获取验证码内容
         $phrase = $builder->getPhrase();
-        // 写入Redis,以便验证
-        $redis = Redis::getRedis();
-        $redis->del($clientUniqueCode);
-        $redis->set($clientUniqueCode, $phrase, ['NX', 'EX' => 300]);
+        $this->redis->del($clientUniqueCode);
+        $this->redis->set($clientUniqueCode, $phrase, ['NX', 'EX' => 300]);
 
         return $builder->get();
     }
 
     /**
      * 验证验证码
+     * @param string $captcha 验证码
+     * @param string $clientUniqueCode 唯一码
+     * @return bool 是否验证通过
      */
     public function verify(string $captcha, string $clientUniqueCode): bool
     {
-        $redis = Redis::getRedis();
-        $cachedCaptcha = $redis->get($clientUniqueCode);
+        $cachedCaptcha = $this->redis->get($clientUniqueCode);
         if ($cachedCaptcha === $captcha) {
-            $redis->del($clientUniqueCode);
+            $this->redis->del($clientUniqueCode);
             return true;
         }
         return false;
@@ -104,27 +117,39 @@ class Captcha
 ## 使用
 
 ```php:no-line-numbers
-#[GetMapping(path: 'captcha/stream')]
-public function captcha(): MessageInterface|ResponseInterface
+/**
+ * 获取验证码.
+ * @param ImageRequest $request 验证请求类
+ * @return MessageInterface|ResponseInterface 流式响应
+ */
+#[Scene(scene: 'captcha')]
+#[GetMapping(path: 'captcha/show')]
+public function getCaptcha(ImageRequest $request): MessageInterface|ResponseInterface
 {
-    $clientCode = '187.091.123,111';
-    $captchaString = (new Captcha())->getStream($clientCode);
+    $ip = $this->getRequestIp();
+    $uniqueCode = $request->input('captcha_unique_code');
+    $unique = $ip . '_' . $uniqueCode;
+    $captchaString = (new Captcha())->getStream($unique);
+
     return $this->response->withHeader('Content-Type', 'image/png')
         ->withBody(new SwooleStream($captchaString));
 }
 
+/**
+ * 验证验证码.
+ * @param ImageRequest $request 验证请求类
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[Scene(scene: 'verify')]
 #[GetMapping(path: 'captcha/verify')]
-public function verify(): array
+public function verifyCaptcha(ImageRequest $request): array
 {
-    $clientCode = '187.091.123,111';
-    $captcha = $this->request->input('captcha', 'xxxx');
-    $isPass = (new Captcha())->verify($captcha, $clientCode);
-    if (! $isPass) {
-        return $this->result->setErrorInfo(
-            ErrorCode::CAPTCHA_ERROR,
-            ErrorCode::getMessage(ErrorCode::CAPTCHA_ERROR)
-        )->getResult();
-    }
-    return $this->result->getResult();
-} 
+    $ip = $this->getRequestIp();
+    $uniqueCode = $request->input('captcha_unique_code');
+    $unique = $ip . '_' . $uniqueCode;
+    $captchaCode = $request->input('captcha');
+
+    $isSuccess = (new Captcha())->verify($captchaCode, $unique);
+    return $this->result->setData(['is_success' => $isSuccess])->getResult();
+}
 ```

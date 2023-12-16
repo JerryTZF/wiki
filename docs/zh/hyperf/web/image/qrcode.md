@@ -59,12 +59,26 @@ use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
 use Endroid\QrCode\Label\Label;
 use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\RoundBlockSizeMode\RoundBlockSizeModeMargin;
+use Endroid\QrCode\Writer\EpsWriter;
+use Endroid\QrCode\Writer\GifWriter;
+use Endroid\QrCode\Writer\PdfWriter;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\Result\ResultInterface;
+use Endroid\QrCode\Writer\SvgWriter;
 use Exception;
 
 class Qrcode
 {
+    /**
+     * logo边长.
+     */
+    private int $logoSize;
+
+    /**
+     * 输出二维码的 Mime 类型.
+     */
+    private string $mime;
+
     /**
      * 文字编码
      */
@@ -114,13 +128,15 @@ class Qrcode
 
     public function __construct(array $config = [])
     {
-        $this->size = $config['size'] ?? 300;
-        $this->margin = $config['margin'] ?? 10;
+        $this->size = isset($config['size']) ? intval($config['size']) : 300;
+        $this->margin = isset($config['margin']) ? intval($config['margin']) : 10;
         $this->logoPath = $config['logo_path'] ?? '';
         $this->labelText = $config['label_text'] ?? '';
         $this->path = $config['path'] ?? BASE_PATH . '/runtime/qrcode/';
-        $this->foregroundColor = $config['foreground_color'] ?? [0, 0, 0];
-        $this->backgroundColor = $config['background_color'] ?? [255, 255, 255];
+        $this->mime = $config['mime'] ?? 'png';
+        $this->logoSize = isset($config['logo_size']) ? intval($config['logo_size']) : 50;
+        $this->foregroundColor = isset($config['foreground_color']) ? array_map('intval', $config['foreground_color']) : [0, 0, 0];
+        $this->backgroundColor = isset($config['background_color']) ? array_map('intval', $config['background_color']) : [255, 255, 255];
 
         if (! is_dir($this->path)) {
             mkdir(iconv('GBK', 'UTF-8', $this->path), 0755);
@@ -129,6 +145,7 @@ class Qrcode
 
     /**
      * 获取二维码字符串.
+     * @throws Exception
      */
     public function getStream(string $content): string
     {
@@ -136,7 +153,17 @@ class Qrcode
     }
 
     /**
+     * 获取二维码MIME类型.
+     * @throws Exception
+     */
+    public function getMimeType(string $content): string
+    {
+        return $this->getResult($content)->getMimeType();
+    }
+
+    /**
      * 保存二维码到本地.
+     * @throws Exception
      */
     public function move(string $filename, string $content): void
     {
@@ -149,7 +176,13 @@ class Qrcode
      */
     private function getResult(string $content): ResultInterface
     {
-        $writer = new PngWriter();
+        $writer = match (true) {
+            $this->mime == 'eps' => new EpsWriter(),
+            $this->mime == 'pdf' => new PdfWriter(),
+            $this->mime == 'svg' => new SvgWriter(),
+            $this->mime == 'gif' => new GifWriter(),
+            default => new PngWriter(),
+        };
         $qrCode = \Endroid\QrCode\QrCode::create($content)
             ->setEncoding(new Encoding($this->encoding))
             ->setErrorCorrectionLevel(new ErrorCorrectionLevelLow())
@@ -160,7 +193,7 @@ class Qrcode
             ->setBackgroundColor(new Color(...$this->backgroundColor));
 
         $logo = ! empty($this->logoPath) ? Logo::create($this->logoPath)
-            ->setResizeToWidth(50)
+            ->setResizeToWidth($this->logoSize)
             ->setPunchoutBackground(true) : null;
 
         $label = ! empty($this->labelText) ? Label::create($this->labelText)
@@ -169,25 +202,106 @@ class Qrcode
         return $writer->write($qrCode, $logo, $label);
     }
 }
+
 ```
 :::
 
 ## 使用
 
+### 控制器构建入参
+
 ```php:no-line-numbers
-#[GetMapping(path: 'qrcode/stream')]
-public function qrcode(): MessageInterface|ResponseInterface
+/**
+ * 构建二维码配置.
+ * @param ImageRequest $request 验证请求类
+ * @return array 关联数组
+ */
+private function buildQrcodeConfig(ImageRequest $request): array
 {
-    $qrCodeString = (new Qrcode())->getStream('测试内容');
+    $logo = $request->file('logo');
+    if ($logo !== null) {
+        $logoPath = BASE_PATH . '/runtime/upload/' . $logo->getClientFilename();
+        $logo->moveTo($logoPath);
+    } else {
+        $logoPath = '';
+    }
+    $config = $request->all();
+    $config['logo_path'] = $logoPath;
+
+    return $config;
+}
+```
+
+### 展示二维码
+
+```php:no-line-numbers
+/**
+ * 展示二维码
+ * @param ImageRequest $request 验证请求类
+ * @return MessageInterface|ResponseInterface 流式响应
+ * @throws Exception 异常抛出
+ */
+#[Scene(scene: 'qrcode')]
+#[PostMapping(path: 'qrcode/show')]
+public function qrcode(ImageRequest $request): MessageInterface|ResponseInterface
+{
+    $config = $this->buildQrcodeConfig($request);
+    $qrCodeString = (new Qrcode($config))->getStream($config['content']);
+    $config['logo_path'] !== '' && unlink($config['logo_path']); // 移除logo临时文件
+
     return $this->response->withHeader('Content-Type', 'image/png')
         ->withBody(new SwooleStream($qrCodeString));
 }
+```
 
-#[GetMapping(path: 'qrcode/save')]
-public function saveQrcode(): array
+### 制作二维码且上传到OSS返回二维码地址
+
+```php:no-line-numbers
+/**
+ * 制作二维码且上传到OSS返回二维码地址.
+ * @param ImageRequest $request 验证请求类
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ * @throws FilesystemException 异常抛出
+ */
+#[Scene(scene: 'qrcode')]
+#[PostMapping(path: 'qrcode/upload')]
+public function uploadQrcodeToOss(ImageRequest $request): array
 {
-    (new Qrcode())->move('qrcode.png', '测试内容');
-    return $this->result->getResult();
+    $config = $this->buildQrcodeConfig($request);
+    $qrCodeString = (new Qrcode($config))->getStream($config['content']);
+    $config['logo_path'] !== '' && unlink($config['logo_path']); // 移除logo临时文件
+
+    $fileFactory = new FileSystem();
+    $path = '/img/' . uniqid() . '_qrcode.png';
+    $fileFactory->write($path, $qrCodeString);
+
+    return $this->result->setData(['url' => ConstCode::OSS_DOMAIN . $path])->getResult();
+}
+```
+
+### 下载二维码
+
+```php:no-line-numbers
+/**
+ * 下载二维码
+ * @param ImageRequest $request 验证请求类
+ * @return MessageInterface|ResponseInterface 流式响应
+ * @throws Exception 异常抛出
+ */
+#[Scene(scene: 'qrcode')]
+#[PostMapping(path: 'qrcode/download')]
+public function downloadQrcode(ImageRequest $request): MessageInterface|ResponseInterface
+{
+    $config = $this->buildQrcodeConfig($request);
+    $qrCodeString = (new Qrcode($config))->getStream($config['content']);
+    $config['logo_path'] !== '' && unlink($config['logo_path']); // 移除logo临时文件
+
+    $tmpFilename = uniqid() . '.png';
+    return $this->response->withHeader('content-description', 'File Transfer')
+        ->withHeader('content-type', 'image/png')
+        ->withHeader('content-disposition', "attachment; filename={$tmpFilename}")
+        ->withHeader('content-transfer-encoding', 'binary')
+        ->withBody(new SwooleStream($qrCodeString));
 }
 ```
 
