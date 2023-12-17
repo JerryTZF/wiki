@@ -1,9 +1,5 @@
 ---
 sidebar: [
-{text: '🚀 接口文档', collapsible: true, children: [
-{'text': '登录相关', link: '/zh/hyperf/api/login'},
-{'text': '角色相关', link: '/zh/hyperf/api/role'},
-]},
 {text: '🖼 图像相关', collapsible: true, children: [
 {'text': '二维码', link: '/zh/hyperf/web/image/qrcode'},
 {'text': '条形码', link: '/zh/hyperf/web/image/barcode'},
@@ -48,8 +44,9 @@ sidebarDepth: 3
 ## API接口说明
 
 ::: tip 【注意】
-**示例接口文档** 中API真实可调。 个人服务器演示所用，请勿压测，谢谢。 🙏 \
-**Host**: `aHR0cHM6Ly9hcGkudHpmLWZvcnlvdS54eXo=`
+个人服务器演示所用，请勿压测，谢谢。 🙏 \
+API会及时更新变动，请以最新为准。
+> 地址：[接口调用地址](https://api.tzf-foryou.xyz/swagger/Hyperf-Wiki.html)
 :::
 
 > Http状态码说明：
