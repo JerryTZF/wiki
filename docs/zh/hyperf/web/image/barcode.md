@@ -133,25 +133,65 @@ class Barcode
     }
 }
 
+
 ```
 :::
 
 ## 使用
 
 ```php:no-line-numbers
-#[GetMapping(path: 'barcode/stream')]
-public function barcode(): MessageInterface|ResponseInterface
+/**
+ * 制作条形码上传到OSS返回条形码地址
+ * @param ImageRequest $request 验证请求类
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ * @throws FilesystemException 异常抛出
+ */
+#[Scene(scene: 'barcode')]
+#[PostMapping(path: 'barcode/upload')]
+public function uploadBarcodeToOss(ImageRequest $request): array
 {
-    $barcodeString = (new Barcode())->getStream('测试内容');
-    return $this->response->withHeader('Content-Type', 'image/png')
+    $config = $request->all();
+    $barcodeString = (new Barcode($config))->getStream($config['content']);
+    $fileFactory = new FileSystem();
+    $path = '/img/' . uniqid() . '_barcode.png';
+    $fileFactory->write($path, $barcodeString);
+    return $this->result->setData(['url' => ConstCode::OSS_DOMAIN . $path])->getResult();
+}
+
+/**
+ * 下载条形码.
+ * @param ImageRequest $request 验证请求类
+ * @return MessageInterface|ResponseInterface 流式响应
+ */
+#[Scene(scene: 'barcode')]
+#[PostMapping(path: 'barcode/download')]
+public function downloadBarcode(ImageRequest $request): MessageInterface|ResponseInterface
+{
+    $config = $request->all();
+    $barcodeString = (new Barcode($config))->getStream($config['content']);
+
+    $tmpFilename = uniqid() . '.png';
+    return $this->response->withHeader('content-description', 'File Transfer')
+        ->withHeader('content-type', 'image/png')
+        ->withHeader('content-disposition', "attachment; filename={$tmpFilename}")
+        ->withHeader('content-transfer-encoding', 'binary')
         ->withBody(new SwooleStream($barcodeString));
 }
 
-#[GetMapping(path: 'barcode/save')]
-public function saveBarcode(): array
+/**
+ * 展示条形码
+ * @param ImageRequest $request 验证请求类
+ * @return MessageInterface|ResponseInterface 流式响应
+ */
+#[Scene(scene: 'barcode')]
+#[PostMapping(path: 'barcode/show')]
+public function barcode(ImageRequest $request): MessageInterface|ResponseInterface
 {
-    (new Barcode())->move('barcode.png', '测试内容');
-    return $this->result->getResult();
+    $config = $request->all();
+    $barcodeString = (new Barcode($config))->getStream($config['content']);
+
+    return $this->response->withHeader('Content-Type', 'image/png')
+        ->withBody(new SwooleStream($barcodeString));
 }
 ```
 
