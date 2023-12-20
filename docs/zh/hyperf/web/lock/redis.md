@@ -238,58 +238,15 @@ return [
 
 ## 使用
 
-### 阻塞形式
-
-::: warning 【注意】
-下面示例代码会出现的情景：\
-1、库存其实还很充足, 但是因为并发较大, 1秒内没有获取到锁, 直接返回获取锁失败。\
-2、可能短时间大并发的抢购并不会抢完, 只有 **持续的并发** 才会 **持续的消耗库存**。
-:::
-
----
+### 阻塞模式和非阻塞模式代码示例
 
 :::: code-group
-::: code-group-item 抢购成功
-```json:no-line-numbers
-{
-    "code":200,
-    "msg":"ok",
-    "status":true,
-    "data":{
-        "oder_no":"170298467081586688"
-    }
-}
-```
-:::
-::: code-group-item 获取锁失败
-```json:no-line-numbers
-{
-    "code":9907,
-    "msg":"获取锁超时",
-    "status":false,
-    "data":[]
-}
-```
-:::
-::: code-group-item 获取到锁但是库存不足
-```json:no-line-numbers
-{
-    "code":50023,
-    "msg":"商品: 赣州脐橙 一箱 5KG 库存不足",
-    "status":false,
-    "data":[]
-}
-```
-:::
-::::
-
-
----
-
+::: code-group-item 阻塞模式
 ```php:no-line-numbers
 /**
  * 创建订单(阻塞形式锁).
  * @param LockRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
  * @throws LockTimeoutException 阻塞超时异常
  * @throws ContainerExceptionInterface 异常
  * @throws NotFoundExceptionInterface 异常
@@ -316,9 +273,8 @@ public function createOrderByAsyncRedisLock(LockRequest $request): array
     return $this->result->setData(['oder_no' => $orderNo])->getResult();
 }
 ```
-
-### 非阻塞形式
-
+:::
+::: code-group-item 非阻塞模式
 ```php:no-line-numbers
 /**
  * 创建订单(非阻塞形式锁).
@@ -326,6 +282,7 @@ public function createOrderByAsyncRedisLock(LockRequest $request): array
  * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
  * @throws ContainerExceptionInterface 异常
  * @throws NotFoundExceptionInterface 异常
+ * @throws LockTimeoutException 异常
  */
 #[PostMapping(path: 'redis/sync')]
 #[Scene(scene: 'create_order')]
@@ -345,10 +302,67 @@ public function createOrderBySyncRedisLock(LockRequest $request): array
     $orderNo = $lock->lockSync(function () use ($gid, $num, $uid) {
         return $this->service->createOrderWithoutLock($uid, intval($gid), intval($num));
     });
+    if ($orderNo === false) {
+        throw new LockTimeoutException();
+    }
 
     return $this->result->setData(['oder_no' => $orderNo])->getResult();
 }
 ```
+:::
+::: code-group-item 无锁下单代码
+```php:no-line-numbers
+/**
+ * 不加锁的创建订单并扣减库存(外部请加锁!!!).
+ * @param int $uid 用户id
+ * @param int $gid 商品id
+ * @param int $number 购买数量
+ * @return string 订单编号
+ */
+public function createOrderWithoutLock(int $uid, int $gid, int $number = 1): string
+{
+    /** @var Goods $goodInfo */
+    $goodInfo = Goods::query()->where(['id' => $gid])->first();
+    // 商品不存在
+    if ($goodInfo === null) {
+        throw new BusinessException(...self::getErrorMap(ErrorCode::GOOD_NOT_FOUND));
+    }
+    // 库存不足
+    if ($goodInfo->stock < $number) {
+        throw new BusinessException(...self::getErrorMap(ErrorCode::GOOD_STOCK_EMPTY, [$goodInfo->name]));
+    }
+
+    // 创建订单
+    $orderNo = Math::getUniqueId();
+    (new Orders([
+        'uid' => $uid,
+        'gid' => $gid,
+        'order_no' => $orderNo,
+        'number' => $number,
+        'payment_money' => Math::mul($goodInfo->price, $number),
+    ]))->save();
+
+    // 扣减库存
+    $goodInfo->stock = $goodInfo->stock - $number;
+    $goodInfo->save();
+
+    return $orderNo;
+}
+```
+:::
+::::
+
+### 阻塞模式和非阻塞模式的迥异
+
+::: warning 【注意】
+相同点：\
+1、都是尝试去获取锁，获取不到锁则不进行更新。\
+2、都是依赖 `Redis` + `Lua` 实现串行化和事件逐一回调完成。\
+3、都可能出现50的并发抢购50的库存，库存还有剩余的情况。无非阻塞模式更容易获取到锁。\
+不同点: \
+1、非阻塞模式尝试获取锁，如果获取不到，则立即放弃更新。而阻塞模式会自旋尝试再次获取，直到超时放弃获取锁，放弃更新。\
+2、阻塞模式的超时时间如果设置不合理，会出现明显的等待。而非阻塞模式基本不会出现较长时间等待。
+:::
 
 ---
 
