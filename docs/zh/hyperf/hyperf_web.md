@@ -36,7 +36,7 @@ sidebarDepth: 3
 
 > **基于 <Badge type="tip" text="Hyperf v3.x" vertical="middle" />** 
 
-> 所有的代码示例均在 [这里](https://github.com/JerryTZF/hyperf-v3/blob/main/app/Controller/TestListController.php) 。
+> 所有的代码示例均在 [这里](https://github.com/JerryTZF/hyperf-v3/tree/main/app) 。
 :::
 
 ---

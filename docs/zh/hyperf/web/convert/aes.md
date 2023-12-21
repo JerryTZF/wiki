@@ -43,7 +43,7 @@ sidebarDepth: 3
 
 - 待加密的数据。
 - 密码学方式(`cipher`)：常见的有：`ECB`、`CBC`、`CFB`、`OFB` 等。
-- 秘钥(`key`)：对称加密都会有一个秘钥来进行加密和解密。秘钥长度有特定要求，一般为：`128位`、`192位`、`256位`。
+- 秘钥(`key`)：对称加密都会有一个秘钥来进行加密和解密。秘钥长度有特定要求，一般为：`128位(16字节)`、`192位(24字节)`、`256位(32字节)`。
 - 填充方式(`padding`)：`AES` 加密核心是通过分组加密的方式进行加密，那么在末尾长度不足每块的长度时，应该如何填充。
   - `NoPadding`: 不做任何填充，但是要求明文必须是16字节的整数倍。
   - `PKCS5Padding`、`PKCS7Padding`: 如果明文块少于16个字节（128bit），在明文块末尾补足相应数量的字符，且每个字节的值等于缺少的字符数。
@@ -221,10 +221,21 @@ use Hyperf\ExceptionHandler\ExceptionHandler;
 use Hyperf\HttpMessage\Stream\SwooleStream;
 use LogicException;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use Throwable;
 
+/**
+ * PHPSeclib包异常处理器.
+ * Class PHPSeclibExceptionHandler.
+ */
 class PHPSeclibExceptionHandler extends ExceptionHandler
 {
+    /**
+     * 处理类.
+     * @param Throwable $throwable 异常
+     * @param ResponseInterface $response 响应接口实现类
+     * @return ResponseInterface 响应接口实现类
+     */
     public function handle(Throwable $throwable, ResponseInterface $response): ResponseInterface
     {
         // 禁止异常冒泡
@@ -239,9 +250,14 @@ class PHPSeclibExceptionHandler extends ExceptionHandler
             ], JSON_UNESCAPED_UNICODE)));
     }
 
+    /**
+     * 是否满足处理条件.
+     * @param Throwable $throwable 异常
+     * @return bool true|false
+     */
     public function isValid(Throwable $throwable): bool
     {
-        return $throwable instanceof LogicException;
+        return $throwable instanceof LogicException || $throwable instanceof RuntimeException;
     }
 }
 
@@ -284,6 +300,7 @@ class AesWithPHPSeclib
 {
     /**
      * aes实例.
+     * @var \phpseclib3\Crypt\AES 实例
      */
     private \phpseclib3\Crypt\AES $aesInstance;
 
@@ -318,6 +335,8 @@ class AesWithPHPSeclib
 
     /**
      * 加密输出Hex字符串.
+     * @param array|string $data 待加密数据
+     * @return string 加密后数据
      */
     public function encryptHex(array|string $data): string
     {
@@ -327,8 +346,10 @@ class AesWithPHPSeclib
 
     /**
      * 解密Hex字符串.
+     * @param string $decryptText 待解密数据
+     * @return array|string 解密后数据
      */
-    public function decryptHex(string $decryptText): string|array
+    public function decryptHex(string $decryptText): array|string
     {
         $data = $this->aesInstance->decrypt(hex2bin($decryptText));
         return json_decode($data, true) ?? $data;
@@ -336,6 +357,8 @@ class AesWithPHPSeclib
 
     /**
      * 加密输出base64字符串.
+     * @param array|string $data 带加密数据
+     * @return string 加密后数据
      */
     public function encryptBase64(array|string $data): string
     {
@@ -345,8 +368,10 @@ class AesWithPHPSeclib
 
     /**
      * 解密Base64字符串.
+     * @param string $decryptText 待解密数据
+     * @return array|string 解密后数据
      */
-    public function decryptBase64(string $decryptText): string|array
+    public function decryptBase64(string $decryptText): array|string
     {
         $data = $this->aesInstance->decrypt(base64_decode($decryptText));
         return json_decode($data, true) ?? $data;
@@ -360,54 +385,57 @@ class AesWithPHPSeclib
 
 ## 使用
 
+:::: code-group
+::: code-group-item AES加密
 ```php:no-line-numbers
-#[GetMapping(path: 'aes')]
-public function aes(): array
+/**
+ * AES加密数据.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'aes/encrypt')]
+#[Scene(scene: 'aes')]
+public function aesEncrypt(EncryptRequest $request): array
 {
-    // ecb 加密解密
-    $data = ['key' => 'AES', 'msg' => '待加密数据'];
-    $key = 'KOQ19sd3_1kaseq/';
-    $iv = 'hello world';
-    $ecbEncryptHex = AES::ecbEncryptHex($data, $key, 'AES-128-ECB');
-    $ecbDecryptHex = AES::ecbDecryptHex($ecbEncryptHex, $key, 'AES-128-ECB');
-    var_dump($ecbEncryptHex, $ecbDecryptHex);
-    $ecbEncryptBase64 = AES::ecbEncryptBase64($data, $key, 'AES-128-ECB');
-    $ecbDecryptBase64 = AES::ecbDecryptBase64($ecbEncryptBase64, $key, 'AES-128-ECB');
-    var_dump($ecbEncryptBase64, $ecbDecryptBase64);
+    [$key, $cipherType, $cipherLength, $type, $option, $data] = [
+        $request->input('key'), // 秘钥
+        $request->input('cipher_type', 'ecb'), // 密码类型
+        intval($request->input('cipher_length', 256)), // 密码学长度
+        $request->input('output_type', 'base64'), // 加密后转换类型(支持hex和base64)
+        $request->input('option'), // 不同的密码类型所需要的参数也不一样
+        $request->input('data'),
+    ];
 
-    // cbc 加解密
-    $cbcEncryptHex = AES::cbcEncryptHex($data, $key, $iv, 'AES-128-CBC');
-    $cbcDecryptHex = AES::cbcDecryptHex($cbcEncryptHex, $key, $iv, 'AES-128-CBC');
-    var_dump($cbcEncryptHex, $cbcDecryptHex);
-    $cbcEncryptBase64 = AES::cbcEncryptBase64($data, $key, $iv, 'AES-128-CBC');
-    $cbcDecryptBase64 = AES::cbcDecryptBase64($cbcEncryptBase64, $key, $iv, 'AES-128-CBC');
-    var_dump($cbcEncryptBase64, $cbcDecryptBase64);
-
-    return $this->result->getResult();
+    $seclib = new AesWithPHPSeclib($cipherType, $cipherLength, $key, $option);
+    $result = $type === 'base64' ? $seclib->encryptBase64($data) : $seclib->encryptHex($data);
+    return $this->result->setData(['encrypt_result' => $result])->getResult();
 }
 ```
-
----
-
+:::
+::: code-group-item AES解密
 ```php:no-line-numbers
-#[GetMapping(path: 'seclib/aes')]
-  public function seclibAes(): array
-  {
-      $constructEcb = [
-          'ecb', 128, 'KOQ19sd3_1kaseq/', [],
-      ];
-      $constructCbc = [
-          'cbc', 128, 'KOQ19sd3_1kaseq/', ['iv' => 'hello world'],
-      ];
-      $data = ['key' => 'Aes', 'msg' => '待加密数据'];
-      $aesInstance = new AesWithPHPSeclib(...$constructCbc);
-      $ecbEncryptHex = $aesInstance->encryptHex($data);
-      $ecbDecryptHex = $aesInstance->decryptHex($ecbEncryptHex);
-      var_dump($ecbEncryptHex, $ecbDecryptHex);
-      $ecbEncryptBase64 = $aesInstance->encryptBase64($data);
-      $ecbDecryptBase64 = $aesInstance->decryptBase64($ecbEncryptBase64);
-      var_dump($ecbEncryptBase64, $ecbDecryptBase64);
+/**
+ * AES解密.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'aes/decrypt')]
+#[Scene(scene: 'aes')]
+public function aesDecrypt(EncryptRequest $request): array
+{
+    [$key, $cipherType, $cipherLength, $type, $option, $encryptText] = [
+        $request->input('key'), // 秘钥
+        $request->input('cipher_type', 'ecb'), // 密码类型
+        intval($request->input('cipher_length', 256)), // 密码学长度
+        $request->input('output_type', 'base64'), // 加密后转换类型(支持hex和base64)
+        $request->input('option'), // 不同的密码类型所需要的参数也不一样
+        $request->input('data'),
+    ];
 
-      return $this->result->getResult();
-  }
+    $seclib = new AesWithPHPSeclib($cipherType, $cipherLength, $key, $option);
+    $result = $type === 'base64' ? $seclib->decryptBase64($encryptText) : $seclib->decryptHex($encryptText);
+    return $this->result->setData(['decrypt_result' => $result])->getResult();
+}
 ```
+:::
+::::
