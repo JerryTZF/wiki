@@ -48,7 +48,7 @@ sidebarDepth: 3
 ***3、RSA算法规则***
 > - 私钥加密的数据只有对应的公钥可以解密，公钥加密的数据只有对应的私钥可以解密。
 > - 私钥可以生成公钥，但是公钥无法生私钥。
-> - **<font color="red">「公钥」对数据加密，用「私钥」解密，称为 ***`加密`*** ; 「私钥」对数据加密，用「公钥」解密，称为 ***`签名`***。</font>**
+> - **<font color="red">「公钥」对数据加密，用「私钥」解密，称为 ***`加解密`*** ; 「私钥」对数据加密，用「公钥」解密，称为 ***`加签、验签`***。</font>**
  
 ---
 ***4、摘要***
@@ -273,28 +273,356 @@ class RsaWithPHPSeclib
 
 ## 使用
 
+> 参考：https://try8.cn/tool/cipher/rsa
+
+---
+
+### 生成秘钥对
+
+:::: code-group
+::: code-group-item 控制器
 ```php:no-line-numbers
-#[GetMapping(path: 'seclib/rsa')]
-public function seclibRsa(): array
+/**
+ * 创建RSA公私钥秘钥对.
+ * @param EncryptRequest $request 请求验证器
+ * @return array|MessageInterface|ResponseInterface 响应
+ */
+#[PostMapping(path: 'rsa/create')]
+#[Scene(scene: 'rsa_create')]
+public function createRsa(EncryptRequest $request): array|MessageInterface|ResponseInterface
 {
-    // 默认属性, 具体参考封装类
-    $rsaInstance = new RsaWithPHPSeclib();
+    $keyFormat = $request->input('key_format'); // PKCS1 || PKCS8
+    $keyLength = $request->input('key_length'); // 1024 || 2048 || 3072 || 4096
+    $isDownload = $request->input('is_download', false);
+    $certificatePassword = $request->input('certificate_password');
 
-    // 公钥加密
-    $encryptData = $rsaInstance->publicKeyEncrypt('hello world');
-    // 私钥解密
-    $decryptData = $rsaInstance->privateKeyDecrypt($encryptData);
+    $result = $this->service->createRSA($keyFormat, $keyLength, $certificatePassword, $isDownload);
+    if (is_array($result)) {
+        return $this->result->setData($result)->getResult();
+    }
 
-    // 私钥加签
-    $signature = $rsaInstance->privateKeySign('hello world');
-    // 公钥验签
-    $verifyResult = $rsaInstance->publicKeyVerifySign('hello world', $signature);
-
-    return $this->result->setData([
-        'public_key_to_encrypt_data' => $encryptData,
-        'private_key_to_decrypt_data' => $decryptData,
-        'private_key_to_sign_data' => $signature,
-        'public_key_to_verify_sign' => $verifyResult,
-    ])->getResult();
+    return $result;
 }
 ```
+:::
+::: code-group-item 逻辑
+```php:no-line-numbers
+/**
+ * 获取RSA公私钥秘钥对.
+ * @param string $keyFormat 秘钥格式
+ * @param int $keyLen 密钥长度
+ * @param null|string $certificatePassword 证书密码
+ * @param bool $isDownload 是否下载公私钥
+ * @return array|MessageInterface|ResponseInterface 响应
+ */
+public function createRSA(
+    string $keyFormat,
+    int $keyLen = 2048,
+    string $certificatePassword = null,
+    bool $isDownload = false,
+): array|MessageInterface|ResponseInterface {
+    $rsaInstance = new RsaWithPHPSeclib($certificatePassword, $keyLen, $keyFormat);
+    if ($isDownload) {
+        $certificateList = [
+            BASE_PATH . '/runtime/openssl/private.pem',
+            BASE_PATH . '/runtime/openssl/public.pem',
+        ];
+        $zipName = 'rsa-' . Carbon::now()->timestamp . '.zip';
+        $zipPath = BASE_PATH . '/runtime/openssl/' . $zipName;
+        Zip::compress($zipPath, $certificateList);
+
+        $response = new Response();
+        return $response->withHeader('content-description', 'File Transfer')
+            ->withHeader('content-type', 'application/zip')
+            ->withHeader('content-disposition', 'attachment; filename="' . $zipName . '"')
+            ->withHeader('content-transfer-encoding', 'binary')
+            ->withBody(new SwooleStream((string) file_get_contents($zipPath)));
+    }
+    return [
+        'public_key' => $rsaInstance->getPublicKeyString(),
+        'private_key' => $rsaInstance->getPrivateKeyString(),
+    ];
+}
+```
+:::
+::::
+
+---
+
+### 公钥加密
+
+:::: code-group
+::: code-group-item 控制器
+```php:no-line-numbers
+/**
+ * 公钥加密.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'rsa/public_key/encrypt')]
+#[Scene(scene: 'encrypt_decrypt')]
+public function publicKeyEncrypt(EncryptRequest $request): array
+{
+    [$key, $padding, $hash, $mgfHash, $data] = [
+        $request->input('key'), // 公钥
+        $request->input('padding'), // 加密填充方式
+        $request->input('hash'), // 哈希算法
+        $request->input('mgf_hash', ''), // mgf哈希算法 当加密填充模式为OAEP或签名填充模式为PSS使用
+        $request->input('data'), // 待加密数据
+    ];
+
+    $encryptResult = $this->service->publicKeyEncrypt($key, $padding, $hash, $data, $mgfHash);
+    return $this->result->setData(['encrypt_result' => $encryptResult])->getResult();
+}
+```
+:::
+::: code-group-item 逻辑
+```php:no-line-numbers
+/**
+ * 公钥加密.
+ * @param string $key 公钥
+ * @param string $encryptPadding 加解密填充方式
+ * @param string $hash 单向哈希
+ * @param array|string $data 待加密数据
+ * @param string $mgfHash 当加密填充模式为OAEP或签名填充模式为PSS使用
+ * @return string 加密结果
+ */
+public function publicKeyEncrypt(
+    string $key,
+    string $encryptPadding,
+    string $hash,
+    string|array $data,
+    string $mgfHash = 'sha256',
+): string {
+    /** @var PublicKey|RSA $publicKey */
+    $publicKey = RSA::loadPublicKey($key);
+    // 是否需要mgfHash
+    if ($encryptPadding === 'ENCRYPTION_OAEP') {
+        $publicKey = $publicKey->withHash($hash)->withMGFHash($mgfHash);
+    } else {
+        $publicKey = $publicKey->withHash($hash);
+    }
+    $encryptPadding = match ($encryptPadding) {
+        'ENCRYPTION_OAEP' => RSA::ENCRYPTION_OAEP,
+        'ENCRYPTION_PKCS1' => RSA::ENCRYPTION_PKCS1,
+        default => RSA::ENCRYPTION_NONE,
+    };
+    $publicKey = $publicKey->withPadding($encryptPadding);
+    $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $data;
+    return base64_encode($publicKey->encrypt($data));
+}
+```
+:::
+::::
+
+---
+
+### 私钥解密
+
+:::: code-group
+::: code-group-item 控制器
+```php:no-line-numbers
+/**
+ * 私钥解密.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'rsa/private_key/decrypt')]
+#[Scene(scene: 'encrypt_decrypt')]
+public function privateKeyDecrypt(EncryptRequest $request): array
+{
+    [$key, $padding, $hash, $mgfHash, $data, $password] = [
+        $request->input('key'), // 私钥
+        $request->input('padding'), // 加密填充方式
+        $request->input('hash'), // 哈希算法
+        $request->input('mgf_hash', ''), // mgf哈希算法 当加密填充模式为OAEP或签名填充模式为PSS使用
+        $request->input('data'), // 待解密数据
+        $request->input('password', ''), // 证书密码
+    ];
+
+    $decryptResult = $this->service->privateKeyDecrypt($key, $padding, $hash, $data, $mgfHash, $password);
+    return $this->result->setData(['decrypt_result' => $decryptResult])->getResult();
+}
+```
+:::
+::: code-group-item 逻辑
+```php:no-line-numbers
+/**
+ * 私钥解密.
+ * @param string $key 私钥
+ * @param string $encryptPadding 加解密填充方式
+ * @param string $hash 单向哈希
+ * @param array|string $data 待加密数据
+ * @param string $mgfHash 当加密填充模式为OAEP或签名填充模式为PSS使用
+ * @param string $password 证书密码
+ * @return mixed 解密结果
+ */
+public function privateKeyDecrypt(
+    string $key,
+    string $encryptPadding,
+    string $hash,
+    string|array $data,
+    string $mgfHash = 'sha256',
+    string $password = '',
+): mixed {
+    /** @var PrivateKey|RSA $privateKey */
+    $privateKey = RSA::loadPrivateKey($key, $password);
+    // 是否需要mgfHash
+    if ($encryptPadding === 'ENCRYPTION_OAEP') {
+        $privateKey = $privateKey->withHash($hash)->withMGFHash($mgfHash);
+    } else {
+        $privateKey = $privateKey->withHash($hash);
+    }
+    $encryptPadding = match ($encryptPadding) {
+        'ENCRYPTION_OAEP' => RSA::ENCRYPTION_OAEP,
+        'ENCRYPTION_PKCS1' => RSA::ENCRYPTION_PKCS1,
+        default => RSA::ENCRYPTION_NONE,
+    };
+    $privateKey = $privateKey->withPadding($encryptPadding);
+    $decrypt = $privateKey->decrypt(base64_decode($data));
+    return json_decode($decrypt, true) ?? $decrypt;
+}
+```
+:::
+::::
+
+---
+
+### 私钥加签
+
+:::: code-group
+::: code-group-item 控制器
+```php:no-line-numbers
+/**
+ * 私钥加签.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'rsa/private_key/sign')]
+#[Scene(scene: 'sign')]
+public function privateKeySign(EncryptRequest $request): array
+{
+    [$key, $padding, $hash, $mgfHash, $data, $password] = [
+        $request->input('key'), // 私钥
+        $request->input('padding'), // 加密填充方式
+        $request->input('hash'), // 哈希算法
+        $request->input('mgf_hash', ''), // mgf哈希算法 当加密填充模式为OAEP或签名填充模式为PSS使用
+        $request->input('data'), // 待解密数据
+        $request->input('password', ''), // 证书密码
+    ];
+
+    $sign = $this->service->privateKeySign($key, $padding, $hash, $data, $mgfHash, $password);
+    return $this->result->setData(['sign' => $sign])->getResult();
+}
+```
+:::
+::: code-group-item 逻辑
+```php:no-line-numbers
+/**
+ * 私钥签名.
+ * @param string $key 私钥
+ * @param string $signPadding 签名填充方式
+ * @param string $hash 单向哈希
+ * @param array|string $data 待签名数据
+ * @param string $mgfHash 当加密填充模式为OAEP或签名填充模式为PSS使用
+ * @param string $password 证书密码
+ * @return string 签名
+ */
+public function privateKeySign(
+    string $key,
+    string $signPadding,
+    string $hash,
+    string|array $data,
+    string $mgfHash = 'sha256',
+    string $password = '',
+): string {
+    /** @var PrivateKey|RSA $privateKey */
+    $privateKey = RSA::loadPrivateKey($key, $password);
+    //        RSA::SIGNATURE_PKCS1, RSA::SIGNATURE_PSS
+    // 是否需要mgfHash
+    if ($signPadding === 'SIGNATURE_PSS') {
+        $privateKey = $privateKey->withHash($hash)->withMGFHash($mgfHash);
+    } else {
+        $privateKey = $privateKey->withHash($hash);
+    }
+    $signPadding = match ($signPadding) {
+        'SIGNATURE_PKCS1' => RSA::SIGNATURE_PKCS1,
+        'SIGNATURE_PSS' => RSA::SIGNATURE_PSS,
+    };
+    $privateKey = $privateKey->withPadding($signPadding);
+    $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : $data;
+    return base64_encode($privateKey->sign($data));
+}
+```
+:::
+::::
+
+---
+
+### 公钥验签
+
+:::: code-group
+::: code-group-item 控制器
+```php:no-line-numbers
+/**
+ * 公钥验签.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'rsa/public_key/verify')]
+#[Scene(scene: 'sign')]
+public function publicKeyVerifySign(EncryptRequest $request): array
+{
+    [$key, $padding, $hash, $mgfHash, $data, $sign] = [
+        $request->input('key'), // 公钥
+        $request->input('padding'), // 签名填充方式
+        $request->input('hash'), // 哈希算法
+        $request->input('mgf_hash', ''), // mgf哈希算法 当加密填充模式为OAEP或签名填充模式为PSS使用
+        $request->input('data'), // 加签源数据
+        $request->input('sign', ''), // 签名
+    ];
+
+    $verifyResult = $this->service->publicKeyVerifySign($key, $padding, $hash, $data, $sign, $mgfHash);
+    return $this->result->setData(['verify_sign_result' => $verifyResult])->getResult();
+}
+```
+:::
+::: code-group-item 逻辑
+```php:no-line-numbers
+/**
+ * 公钥验签.
+ * @param string $key 公钥
+ * @param string $signPadding 签名填充方式
+ * @param string $hash 单向哈希
+ * @param array|string $data 加签的原数据
+ * @param string $sign 签名
+ * @param string $mgfHash 当加密填充模式为OAEP或签名填充模式为PSS使用
+ * @return bool 验签结果
+ */
+public function publicKeyVerifySign(
+    string $key,
+    string $signPadding,
+    string $hash,
+    string|array $data,
+    string $sign,
+    string $mgfHash = 'sha256',
+): bool {
+    /** @var PublicKey|RSA $publicKey */
+    $publicKey = RSA::loadPublicKey($key);
+    // 是否需要mgfHash
+    if ($signPadding === 'SIGNATURE_PSS') {
+        $publicKey = $publicKey->withHash($hash)->withMGFHash($mgfHash);
+    } else {
+        $publicKey = $publicKey->withHash($hash);
+    }
+    $signPadding = match ($signPadding) {
+        'SIGNATURE_PKCS1' => RSA::SIGNATURE_PKCS1,
+        'SIGNATURE_PSS' => RSA::SIGNATURE_PSS,
+    };
+    $publicKey = $publicKey->withPadding($signPadding);
+    $data = is_array($data) ? json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : $data;
+    return $publicKey->verify($data, base64_decode($sign));
+}
+```
+:::
+::::

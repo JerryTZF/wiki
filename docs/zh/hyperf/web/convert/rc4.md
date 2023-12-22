@@ -52,6 +52,7 @@ composer require phpseclib/phpseclib
 
 ## 封装工具类
 
+::: details
 ```php:no-line-numbers
 <?php
 
@@ -64,11 +65,13 @@ class Rc4WithPHPSecLib
 {
     /**
      * RC4实例对象.
+     * @var RC4 rc4实例
      */
     private RC4 $RC4;
 
     /**
      * 秘钥.
+     * @var string ''
      */
     private string $key;
 
@@ -81,12 +84,15 @@ class Rc4WithPHPSecLib
         $this->RC4 = new RC4();
 
         $this->RC4->setKey($this->key);
+        // TODO $RC4 还有一些设置IV等, 这里不作展开 :)
     }
 
     /**
      * 加密.
+     * @param array|string $message 待加密数据
+     * @return string 加密后数据
      */
-    public function encrypt(string|array $message): string
+    public function encrypt(array|string $message): string
     {
         $message = is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $message;
         return base64_encode($this->RC4->encrypt($message));
@@ -94,17 +100,21 @@ class Rc4WithPHPSecLib
 
     /**
      * 解密.
+     * @param string $encryptData 待解密数据
+     * @return array|string 解密后数据
      */
-    public function decrypt(string $encryptData): string|array
+    public function decrypt(string $encryptData): array|string
     {
         $decryptData = $this->RC4->decrypt(base64_decode($encryptData));
         return json_decode($decryptData, true) ?? $decryptData;
     }
-    
+
     /**
      * 原生加密.
+     * @param array|string $message 待加密数据
+     * @return string 加密后数据
      */
-    public function encryptNative(string|array $message): string
+    public function encryptNative(array|string $message): string
     {
         $message = is_array($message) ? json_encode($message, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $message;
         return base64_encode($this->native($this->key, $message));
@@ -112,8 +122,10 @@ class Rc4WithPHPSecLib
 
     /**
      * 原生解密.
+     * @param string $encryptData 待解密数据
+     * @return array|string 解密后数据
      */
-    public function decryptNative(string $encryptData): string|array
+    public function decryptNative(string $encryptData): array|string
     {
         $decryptData = $this->native($this->key, base64_decode($encryptData));
         return json_decode($decryptData, true) ?? $decryptData;
@@ -121,6 +133,9 @@ class Rc4WithPHPSecLib
 
     /**
      * 原生算法.
+     * @param string $key 秘钥
+     * @param string $data 待解密数据
+     * @return string 加密后数据
      */
     private function native(string $key, string $data): string
     {
@@ -128,7 +143,7 @@ class Rc4WithPHPSecLib
         $keyMap[] = '';
         $box[] = '';
         $pwdLength = strlen($key);
-        $data_length = strlen($data);
+        $dataLength = strlen($data);
         for ($i = 0; $i < 256; ++$i) {
             $keyMap[$i] = ord($key[$i % $pwdLength]);
             $box[$i] = $i;
@@ -139,7 +154,7 @@ class Rc4WithPHPSecLib
             $box[$i] = $box[$j];
             $box[$j] = $tmp;
         }
-        for ($a = $j = $i = 0; $i < $data_length; ++$i) {
+        for ($a = $j = $i = 0; $i < $dataLength; ++$i) {
             $a = ($a + 1) % 256;
             $j = ($j + $box[$a]) % 256;
             $tmp = $box[$a];
@@ -153,28 +168,49 @@ class Rc4WithPHPSecLib
 }
 
 ```
+:::
 
 ## 使用
 
+### 加密
+
 ```php:no-line-numbers
-#[GetMapping(path: 'rc4')]
-public function rc4(): array
+/**
+ * RC4加密.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'rc4/encrypt')]
+#[Scene(scene: 'rc4')]
+public function rc4Encrypt(EncryptRequest $request): array
 {
-    $rc4Instance = new Rc4WithPHPSecLib('hello world');
-    $body = ['a' => 'A'];
+    $key = $request->input('key');
+    $data = $request->input('data');
+    $rc4 = new Rc4WithPHPSecLib($key);
+    $result = $rc4->encrypt($data);
+    return $this->result->setData(['encrypt_result' => $result])->getResult();
+}
+```
 
-    $encrypt = $rc4Instance->encrypt($body);
-    $decrypt = $rc4Instance->decrypt($encrypt);
+---
 
-    $encrypt_ = $rc4Instance->encryptNative($body);
-    $decrypt_ = $rc4Instance->decryptNative($encrypt_);
+### 解密
 
-    return $this->result->setData([
-        'encrypt' => $encrypt,
-        'decrypt' => $decrypt,
-        'encrypt_' => $encrypt_,
-        'decrypt_' => $decrypt_,
-    ])->getResult();
+```php:no-line-numbers
+/**
+ * RC4解密.
+ * @param EncryptRequest $request 请求验证器
+ * @return array ['code' => '200', 'msg' => 'ok', 'status' => true, 'data' => []]
+ */
+#[PostMapping(path: 'rc4/decrypt')]
+#[Scene(scene: 'rc4')]
+public function rc4Decrypt(EncryptRequest $request): array
+{
+    $key = $request->input('key');
+    $data = $request->input('data');
+    $rc4 = new Rc4WithPHPSecLib($key);
+    $result = $rc4->decrypt($data);
+    return $this->result->setData(['decrypt_result' => $result])->getResult();
 }
 ```
 
