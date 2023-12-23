@@ -66,21 +66,25 @@ class ExportExcelHandler
 {
     /**
      * 表格制作实例.
+     * @var Spreadsheet 实例
      */
     private Spreadsheet $spreadsheet;
 
     /**
      * 表格实例.
+     * @var Worksheet 实例
      */
     private Worksheet $sheet;
 
     /**
      * 行数.
+     * @var int 整型
      */
     private int $row;
 
     /**
      * 保存路径.
+     * @var string 路径
      */
     private string $dir;
 
@@ -104,7 +108,7 @@ class ExportExcelHandler
 
         $this->dir = BASE_PATH . '/runtime/excel/';
         if (! is_dir($this->dir)) {
-            mkdir($this->dir, 0777, true);
+            mkdir($this->dir, 0755, true);
         }
     }
 
@@ -150,7 +154,8 @@ class ExportExcelHandler
     {
         $this->spreadsheet->setActiveSheetIndex(0);
 
-        $filename = $filename . '.xlsx';
+        $filename .= '.xlsx';
+        $filename = mb_convert_encoding($filename, 'UTF-8', 'auto');
         $outFileName = $this->dir . $filename;
         $writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
         $writer->save($outFileName);
@@ -167,7 +172,8 @@ class ExportExcelHandler
      */
     public function saveToBrowser(string $filename): ResponseInterface
     {
-        $filename = $filename . '.xlsx';
+        $filename .= '.xlsx';
+        $filename = mb_convert_encoding($filename, 'UTF-8', 'auto');
         $unique = $this->dir . uniqid() . microtime() . '.xlsx';
         $writer = IOFactory::createWriter($this->spreadsheet, 'Xlsx');
         $writer->save($unique);
@@ -183,7 +189,7 @@ class ExportExcelHandler
 
         return $response->withHeader('content-description', 'File Transfer')
             ->withHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            ->withHeader('content-disposition', "attachment; filename={$filename}")
+            ->withHeader('content-disposition', 'attachment; filename="' . urlencode($filename) . '"')
             ->withHeader('content-transfer-encoding', 'binary')
             ->withBody(new SwooleStream((string) $content));
     }
@@ -209,8 +215,18 @@ use PhpOffice\PhpSpreadsheet\Exception;
 use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
+/**
+ * phpoffice包异常处理器.
+ * Class OfficeExceptionHandler.
+ */
 class OfficeExceptionHandler extends ExceptionHandler
 {
+    /**
+     * 处理类.
+     * @param Throwable $throwable 异常
+     * @param ResponseInterface $response 响应接口实现类
+     * @return ResponseInterface 响应接口实现类
+     */
     public function handle(Throwable $throwable, ResponseInterface $response): ResponseInterface
     {
         // 禁止异常冒泡
@@ -225,6 +241,11 @@ class OfficeExceptionHandler extends ExceptionHandler
             ], JSON_UNESCAPED_UNICODE)));
     }
 
+    /**
+     * 是否满足处理条件.
+     * @param Throwable $throwable 异常
+     * @return bool true|false
+     */
     public function isValid(Throwable $throwable): bool
     {
         return $throwable instanceof Exception;
@@ -258,40 +279,38 @@ return [
 ## 使用
 
 ```php:no-line-numbers
-#[GetMapping(path: 'office/excel/download')]
-public function downloadExcel(): ResponseInterface
+/**
+ * 导出订单Excel(同步).
+ * @return MessageInterface|ResponseInterface 文件流
+ * @throws ContainerExceptionInterface 异常
+ * @throws LockTimeoutException 异常
+ * @throws NotFoundExceptionInterface 异常
+ */
+#[GetMapping(path: 'export/excel')]
+public function exportOrderExcel(): MessageInterface|ResponseInterface
 {
-    $lock = new RedisLock('export_excel', 3, 3, 'downloadExcel');
-    // 制作过程中因为是对对象连续操作(不做上下文封装了,懒)，所以不应该并行操作同一对象,也减少内存使用
+    // 使用锁防止并发导出消耗大量内存.
+    $lock = new RedisLock('exportExcel', 5, 3, 'exportOrderExcel');
     return $lock->lockAsync(function () {
         $excelHandler = new ExportExcelHandler();
+        // 设置表头
         $excelHandler->setHeaders([
-            'ID', '商品ID', '订单号', '购买数量', '金额', '客户', '创建时间', '修改时间',
+            '序号', '商品ID', '商品名称', '订单编号', '购买数量', '支付金额', '买家昵称', '创建订单时间',
         ]);
-        Orders::query()->orderBy('id', 'DESC')
+        // 分块设置数据
+        $fields = [
+            'orders.id', 'orders.gid', 'goods.name', 'orders.order_no', 'orders.number', 'orders.payment_money',
+            'users.account', 'orders.create_time',
+        ];
+        Orders::query()
+            ->leftJoin('users', 'users.id', '=', 'orders.uid')
+            ->leftJoin('goods', 'goods.id', '=', 'orders.gid')
+            ->where('orders.number', '>', 1)
+            ->select($fields)
             ->chunk(20, function ($records) use ($excelHandler) {
                 $excelHandler->setData($records->toArray());
             });
-        return $excelHandler->saveToBrowser('测试导出');
+        return $excelHandler->saveToBrowser('订单列表导出');
     });
-}
-
-#[GetMapping(path: 'office/excel/save')]
-public function saveExcel(): array
-{
-    $lock = new RedisLock('save_excel', 3, 3, 'saveExcel');
-    // 制作过程中因为是对对象操作，所以不应该并行操作同一对象,也减少内存使用
-    $file = $lock->lockAsync(function () {
-        $excelHandler = new ExportExcelHandler();
-        $excelHandler->setHeaders([
-            'ID', '商品ID', '订单号', '购买数量', '金额', '客户', '创建时间', '修改时间',
-        ]);
-        Orders::query()->orderBy('id', 'DESC')
-            ->chunk(20, function ($records) use ($excelHandler) {
-                $excelHandler->setData($records->toArray());
-            });
-        return $excelHandler->saveToLocal('测试导出');
-    });
-    return $this->result->setData(['file_path' => $file])->getResult();
 }
 ```

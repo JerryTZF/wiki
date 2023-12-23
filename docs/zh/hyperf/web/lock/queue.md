@@ -267,13 +267,13 @@ public function createOrderWithLockQueue(int $uid, int $gid, int $number = 1): s
     Coroutine::create(function () use ($uid, $gid, $number, $orderNo) {
         // 队列消费配置请看:
         // config/autoload/async_queue.php 中 ConstCode::LOCK_QUEUE_NAME 队列的 concurrent.limit配置.
-        $redisQueue = RedisQueueFactory::getQueueInstance(ConstCode::LOCK_QUEUE_NAME);
-        $redisQueue->push(new CreateOrderJob(uniqid(), [
+        $job = new CreateOrderJob(uniqid(), [
             'uid' => $uid,
             'gid' => $gid,
             'num' => $number,
             'order_no' => $orderNo,
-        ]));
+        ]);
+        RedisQueueFactory::safePush($job, ConstCode::LOCK_QUEUE_NAME, 0);
     });
 
     return $orderNo;
