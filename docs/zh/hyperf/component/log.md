@@ -52,6 +52,8 @@ composer require hyperf/logger
 <?php
 
 declare(strict_types=1);
+use Monolog\Level;
+
 return [
     'default' => [
         'handlers' => [
@@ -60,7 +62,7 @@ return [
                 'class' => Monolog\Handler\RotatingFileHandler::class,
                 'constructor' => [
                     'filename' => BASE_PATH . '/runtime/logs/info.log',
-                    'level' => Monolog\Logger::INFO,
+                    'level' => Level::Info,
                 ],
                 'formatter' => [
                     'class' => Monolog\Formatter\LineFormatter::class,
@@ -76,7 +78,7 @@ return [
                 'class' => Monolog\Handler\RotatingFileHandler::class,
                 'constructor' => [
                     'filename' => BASE_PATH . '/runtime/logs/error.log',
-                    'level' => Monolog\Logger::ERROR,
+                    'level' => Level::Error,
                 ],
                 'formatter' => [
                     'class' => Monolog\Formatter\LineFormatter::class,
@@ -104,22 +106,27 @@ declare(strict_types=1);
 
 namespace App\Lib\Log;
 
+use App\Constants\ConstCode;
+use App\Job\ReportLogJob;
+use App\Lib\RedisQueue\RedisQueueFactory;
 use Carbon\Carbon;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Contract\StdoutLoggerInterface;
+use Hyperf\Coroutine\Coroutine;
 use Hyperf\Logger\LoggerFactory;
+use Hyperf\Stringable\Str;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * @method static void info(string $msg, array $content = [])
- * @method static void warning(string $msg, array $content = [])
- * @method static void error(string $msg, array $content = [])
- * @method static void alert(string $msg, array $content = [])
- * @method static void critical(string $msg, array $content = [])
- * @method static void emergency(string $msg, array $content = [])
- * @method static void notice(string $msg, array $content = [])
+ * @method static void info(string $msg, array $content = [], string $straceString = '')
+ * @method static void warning(string $msg, array $content = [], string $straceString = '')
+ * @method static void error(string $msg, array $content = [], string $straceString = '')
+ * @method static void alert(string $msg, array $content = [], string $straceString = '')
+ * @method static void critical(string $msg, array $content = [], string $straceString = '')
+ * @method static void emergency(string $msg, array $content = [], string $straceString = '')
+ * @method static void notice(string $msg, array $content = [], string $straceString = '')
  */
 class Log
 {
@@ -130,21 +137,44 @@ class Log
      */
     public static function __callStatic(string $level, array $args = []): void
     {
-        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        $trace = array_pop($trace);
-
-        [$now, $caller, $message] = [
-            Carbon::now()->toDateTimeString(),
-            "{$trace['class']}@{$trace['function']}",
-            $args[0],
+        // 获取最近两层的调用栈信息
+        [$headTrace, $lastTrace] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        // 静态调用参数处理
+        [$message, $context, $traceString] = [
+            $args[0] ?? '',
+            $args[1] ?? [],
+            $args[2] ?? '',
         ];
+        // 节点channel
+        $channel = "{$lastTrace['class']}@{$lastTrace['function']}";
+        // 当前日期
+        $nowDate = Carbon::now()->toDateTimeString();
+        // string context
+        $contextString = json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        $msg = "[time: {$now}]|[caller: {$caller}]|[message: {$message}]";
+        // 异步队列写入数据库(可以用其他方式替代日志上报)
+        $jobParams = [
+            'level' => Str::upper($level),
+            'class' => $lastTrace['class'],
+            'function' => $lastTrace['function'],
+            'message' => $message,
+            'context' => $contextString,
+            'file' => $headTrace['file'],
+            'line' => $headTrace['line'],
+            'trace' => $traceString,
+        ];
+        Coroutine::create(function () use ($jobParams) {
+            $job = new ReportLogJob(uniqid(), $jobParams);
+            RedisQueueFactory::safePush($job, ConstCode::LOCK_QUEUE_NAME, 0);
+        });
 
-        // CLI输出(没有$content)
-        static::stdout()->{$level}($msg);
+        // CLI输出
+        $stdoutMessage = $traceString === '' ?
+            "[{$nowDate}][{$channel}][{$message}]" :
+            "[{$nowDate}][{$channel}][{$message}]\n{$traceString}";
+        static::stdout()->{$level}($stdoutMessage);
         // DISK输出
-        static::get($caller)->{$level}($msg, $args[1] ?? []);
+        static::get($channel)->{$level}($message, $context);
     }
 
     /**
