@@ -21,6 +21,12 @@ sidebar: [
 {'text': 'AWS4', link: '/zh/hyperf/web/convert/aws4'},
 {'text': 'RC4', link: '/zh/hyperf/web/convert/rc4'},
 ]},
+{text: '🍪 登录相关', collapsible: true, children: [
+{'text': 'JWT', link: '/zh/hyperf/web/login/jwt'},
+{'text': 'Cookie', link: '/zh/hyperf/web/login/cookie'},
+{'text': 'Session', link: '/zh/hyperf/web/login/session'},
+{'text': 'OAuth2.0', link: '/zh/hyperf/web/login/oauth'},
+]},
 ]
 
 sidebarDepth: 3
