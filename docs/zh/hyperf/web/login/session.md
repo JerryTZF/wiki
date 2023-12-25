@@ -30,7 +30,7 @@ sidebar: [
 ]
 
 prev: /zh/hyperf/web/login/cookie
-next: /zh/hyperf/web/login/oauth
+next: /zh/hyperf/web/login/qa
 sidebarDepth: 3
 ---
 

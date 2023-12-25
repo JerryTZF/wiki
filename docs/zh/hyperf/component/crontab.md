@@ -33,7 +33,6 @@ sidebarDepth: 3
 ::: tip
 
 - `Hyperf` 定时任务本质上是 `Swoole` 拉起的一个进程，并且随着 `Hyperf` 服务启动而启动(可以配置)。
-- 集群模式下请保证不会重复执行，一般情况下，集群模式，定时任务或消息队列会统一管理。 :smile:
 - 这里采用 `多进程` 模式，协程模式暂未使用，暂不总结。
 :::
 
@@ -44,6 +43,36 @@ composer require hyperf/crontab
 ```
 
 ## 注册执行进程
+
+> 👇🏻 二选一即可。
+
+### 自定义执行进程
+
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+
+namespace App\Process;
+
+use Hyperf\Crontab\Process\CrontabDispatcherProcess;
+use Hyperf\Process\Annotation\Process;
+
+#[Process(
+    nums: 1, // 进程数目
+    name: 'SchedulerProcess', // 进程名称
+    redirectStdinStdout: false, // 重定向自定义进程的标准输入和输出
+    pipeType: 2, // 管道类型
+    enableCoroutine: true // 进程内是否启用协程
+)]
+class SchedulerProcess extends CrontabDispatcherProcess
+{
+    public string $name = 'scheduler-process';
+}
+
+```
+
+### 使用系统执行进程
 
 > config/autoload/processes.php
 
@@ -77,44 +106,34 @@ return [
 <?php
 
 declare(strict_types=1);
-/**
- * This file is part of Hyperf.
- *
- * @link     https://www.hyperf.io
- * @document https://hyperf.wiki
- * @contact  group@hyperf.io
- * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
- */
 
 namespace App\Scheduler;
 
-use App\Exception\SchedulerException;
 use App\Lib\Log\Log;
 use Carbon\Carbon;
 use Hyperf\Crontab\Annotation\Crontab;
 use Throwable;
 
 #[Crontab(
-    rule: '\/10 * * * * *',
-    name: 'DemoScheduler',
-    onOneServer: true,
-    callback: 'execute',
-    memo: '测试定时任务',
-    enable: 'isEnable',
+    rule: '\/10 * * * * *', // 定时任务规则
+    name: 'DemoScheduler', // 定时任务名称
+    singleton: true, // 并发执行只有一个被执行,例如: 很多个任务都是10:00AM执行时
+    onOneServer: true, // 多实例部署项目时，则只有一个实例会被触发
+    callback: 'execute', // 消费方法
+    memo: '测试定时任务', // 备注
+    enable: 'isEnable', // 是否启动
 )]
 class DemoScheduler
 {
+    // 就算不捕获异常, 底层执行也有事件触发器触发, 会被外部监听器监听到
     public function execute(): void
     {
         try {
-            // 模拟异常
-            // 就算不写try-catch-finally底层有触发器触发异常, 会被外部监听器监听到
-            $a = 1 / 0; 
             Log::stdout()->info(Carbon::now()->toDateTimeString());
         } catch (Throwable $e) {
             Log::stdout()->error($e->getMessage());
         } finally {
-            Log::stdout()->info('本周期任务结束 !!!');
+            Log::stdout()->info('DemoScheduler 执行完成');
         }
     }
 
@@ -123,6 +142,7 @@ class DemoScheduler
         return \Hyperf\Support\env('APP_ENV', 'dev') === 'dev';
     }
 }
+
 ```
 
 ::: warning 【注意】
@@ -131,6 +151,17 @@ class DemoScheduler
 - 注意在注解定义时，规则存在 `\` 符号时，需要进行转义处理，即填写 `*\/5 * * * * *`
 :::
 
+---
+
+## 手动触发定时任务
+
+> 当服务没有启动，想手动执行定时任务时，可以使用命令行命令执行。**<Badge type="tip" text="Hyperf v3.x" vertical="middle" />**
+
+```shell:no-line-numbers
+php bin/hyperf.php crontab:run
+```
+---
+![](https://img.tzf-foryou.xyz/img/20231226005658.png)
 ---
 
 ## 执行失败

@@ -37,7 +37,7 @@ sidebarDepth: 3
 composer require hyperf/event
 ```
 
-## 慢日志监听器
+## 慢SQL监听器
 
 :::details 查看代码
 ```php:no-line-numbers
@@ -79,8 +79,8 @@ class DbQueryExecutedListener implements ListenerInterface
                 }
             }
 
-            // 大于500毫秒记录日志
-            if ($event->time > 500) {
+            // 大于2000毫秒记录日志
+            if ($event->time > 2000) {
                 $logMessage = sprintf('[%s毫秒] %s', $event->time, $sql);
                 Log::warning($logMessage);
             }
@@ -106,10 +106,11 @@ use Hyperf\AsyncQueue\Event\AfterHandle;
 use Hyperf\AsyncQueue\Event\BeforeHandle;
 use Hyperf\AsyncQueue\Event\Event;
 use Hyperf\AsyncQueue\Event\FailedHandle;
-use Hyperf\AsyncQueue\Event\QueueLength;
 use Hyperf\AsyncQueue\Event\RetryHandle;
 use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 #[Listener]
 class QueueHandleListener implements ListenerInterface
@@ -130,6 +131,12 @@ class QueueHandleListener implements ListenerInterface
         ];
     }
 
+    /**
+     * 队列监听器逻辑.
+     * @param object $event 消息体
+     * @throws ContainerExceptionInterface 异常
+     * @throws NotFoundExceptionInterface 异常
+     */
     public function process(object $event): void
     {
         if ($event instanceof Event && $event->getMessage()->job()) {
@@ -142,17 +149,20 @@ class QueueHandleListener implements ListenerInterface
 
             switch (true) {
                 case $event instanceof BeforeHandle:
-                    Log::stdout()->info(sprintf('[%s] Processing %s.', $date, $jobClass));
+                    Log::stdout()->info(sprintf('[%s] %s 正在消费.', $date, $jobClass));
                     break;
                 case $event instanceof AfterHandle:
-                    Log::stdout()->info(sprintf('[%s] Processed %s.', $date, $jobClass));
+                    Log::stdout()->info(sprintf('[%s] %s 消费完成.', $date, $jobClass));
                     break;
                 case $event instanceof FailedHandle:
-                    Log::error(sprintf('[%s] Failed %s.', $date, $jobClass));
-                    Log::error((string) $event->getThrowable());
+                    $msg = sprintf('[%s] %s 消费失败. 异常信息: %s', $date, $jobClass, $event->getMessage());
+                    Log::stdout()->error($msg);
+                    Log::error($msg);
                     break;
                 case $event instanceof RetryHandle:
-                    Log::warning(sprintf('[%s] Retried %s.', $date, $jobClass));
+                    $msg = sprintf('[%s] %s 正在重试.', $date, $jobClass);
+                    Log::stdout()->warning($msg);
+                    Log::warning($msg);
                     break;
                 default:
                     Log::warning('未知事件');
@@ -192,21 +202,23 @@ namespace App\Listener;
 
 use App\Lib\Log\Log;
 use Hyperf\Crontab\Event\FailToExecute;
+use Hyperf\Event\Annotation\Listener;
 use Hyperf\Event\Contract\ListenerInterface;
 
+#[Listener]
 class SchedulerErrorListener implements ListenerInterface
 {
     public function listen(): array
     {
         return [
-            FailToExecute::class,
+            FailToExecute::class, // 系统事件, 底层有相应的触发器触发(抛出异常会触发该事件)
         ];
     }
 
     public function process(object $event): void
     {
         if ($event instanceof FailToExecute) {
-            $info = sprintf('[定时任务异常监听器][任务:%s][错误:%s]', $event->crontab->getName(), $event->throwable->getMessage());
+            $info = sprintf('任务:%s; 错误:%s', $event->crontab->getName(), $event->throwable->getMessage());
             Log::error($info);
         }
     }
@@ -245,7 +257,7 @@ class ConsumerProcessListener implements ListenerInterface
     {
         switch (true) {
             case $event instanceof AfterProcessHandle:
-                Log::warning(sprintf('[自定义进程停止][进程:%s][第 %s 个进程]', $event->process->name, $event->index));
+                Log::stdout()->warning(sprintf('[自定义进程停止][进程:%s][第 %s 个进程]', $event->process->name, $event->index));
                 break;
             case $event instanceof BeforeProcessHandle:
                 Log::stdout()->info(sprintf('[自定义进程启动][进程:%s][第 %s 个进程]', $event->process->name, $event->index));
@@ -253,6 +265,59 @@ class ConsumerProcessListener implements ListenerInterface
             default:
                 Log::warning('未知事件');
         }
+    }
+}
+
+```
+:::
+
+## 自定义验证规则监听器
+
+::: details 查看代码
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+
+namespace App\Listener;
+
+use Hyperf\Collection\Arr;
+use Hyperf\Event\Annotation\Listener;
+use Hyperf\Event\Contract\ListenerInterface;
+use Hyperf\Validation\Contract\ValidatorFactoryInterface;
+use Hyperf\Validation\Event\ValidatorFactoryResolved;
+
+// 自定义验证器规则监听器注册
+#[Listener]
+class ValidatorFactoryResolvedListener implements ListenerInterface
+{
+    public function listen(): array
+    {
+        return [
+            ValidatorFactoryResolved::class,
+        ];
+    }
+
+    public function process(object $event): void
+    {
+        /** @var ValidatorFactoryInterface $factory */
+        $factory = $event->validatorFactory;
+        // 注册手机号验证规则
+        $factory->extend('phone', function ($attr, $value, $parameters, $validator) {
+            return (bool) preg_match('/^1[234578]\\d{9}$/', (string) $value);
+        });
+        // 非关联数组验证规则
+        $factory->extend('array_list', function ($attr, $value, $parameters, $validator) {
+            return ! Arr::isAssoc($value);
+        });
+
+        // 错误信息占位符
+        $factory->replacer('phone', function ($message, $attr, $rule, $parameters) {
+            return str_replace(':phone', $attr, $message);
+        });
+        $factory->replacer('array_list', function ($message, $attr, $rule, $parameters) {
+            return str_replace(':array_list', $attr, $message);
+        });
     }
 }
 
