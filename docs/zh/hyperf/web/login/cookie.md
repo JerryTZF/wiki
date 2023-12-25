@@ -25,7 +25,7 @@ sidebar: [
 {'text': 'JWT', link: '/zh/hyperf/web/login/jwt'},
 {'text': 'Cookie', link: '/zh/hyperf/web/login/cookie'},
 {'text': 'Session', link: '/zh/hyperf/web/login/session'},
-{'text': 'OAuth2.0', link: '/zh/hyperf/web/login/oauth'},
+{'text': 'Q&A', link: '/zh/hyperf/web/login/qa'},
 ]},
 ]
 
@@ -41,7 +41,8 @@ sidebarDepth: 3
 
 ## 作用
 
-辅助WEB请求(Http)保持状态。
+- 辅助WEB请求(Http)保持状态。
+- 浏览器本地存储。
 
 ## 流程及原理
 

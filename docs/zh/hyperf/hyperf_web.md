@@ -25,7 +25,7 @@ sidebar: [
 {'text': 'JWT', link: '/zh/hyperf/web/login/jwt'},
 {'text': 'Cookie', link: '/zh/hyperf/web/login/cookie'},
 {'text': 'Session', link: '/zh/hyperf/web/login/session'},
-{'text': 'OAuth2.0', link: '/zh/hyperf/web/login/oauth'},
+{'text': 'Q&A', link: '/zh/hyperf/web/login/qa'},
 ]},
 ]
 

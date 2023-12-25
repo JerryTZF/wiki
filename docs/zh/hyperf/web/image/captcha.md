@@ -21,6 +21,12 @@ sidebar: [
 {'text': 'AWS4', link: '/zh/hyperf/web/convert/aws4'},
 {'text': 'RC4', link: '/zh/hyperf/web/convert/rc4'},
 ]},
+{text: '🍪 登录相关', collapsible: true, children: [
+{'text': 'JWT', link: '/zh/hyperf/web/login/jwt'},
+{'text': 'Cookie', link: '/zh/hyperf/web/login/cookie'},
+{'text': 'Session', link: '/zh/hyperf/web/login/session'},
+{'text': 'Q&A', link: '/zh/hyperf/web/login/qa'},
+]},
 ]
 
 prev: /zh/hyperf/web/image/barcode
@@ -42,7 +48,7 @@ sidebarDepth: 3
 如果 <Badge type="tip" text="PHP8.0+" vertical="middle" />, 需要加载最新版本依赖包。详情参见：[issues#110](https://github.com/Gregwar/Captcha/issues/110)
 :::
 
- ```shell:no-line-numbers
+```shell:no-line-numbers
 composer require gregwar/captcha
 ```
 
