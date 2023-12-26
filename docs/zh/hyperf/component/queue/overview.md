@@ -17,6 +17,7 @@ sidebar: [
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
+{text: '📡 命令行', link: '/zh/hyperf/component/command'},
 ]
 
 prev: /zh/hyperf/component/cache
@@ -43,7 +44,7 @@ sidebarDepth: 3
 超时不意味着失败: \
 1、在消费的过程中，只要是超过了配置的超时时间，该消息就会被投递至timeout队列，但是会依然执行，直到异常退出或者正常退出。\
 2、如果能够保证消息的幂等性(多次调用和单次调用不会影响业务逻辑处理)，那么可以开启ReloadChannelListener监听器，该监听器会将timeout队列内的消息重新放回waiting队列，等待再次被执行。(默认不开启ReloadChannelListener监听器，即：超时任务需要自己处理) 。\
-3、先超时后失败，则不会触发重试机制(已经投递至超时队列，失败队列没哟消息，所以无法重试) 。\
+3、先超时后失败，则不会触发重试机制(已经投递至超时队列，失败队列没有消息，所以无法重试) 。\
 4、先失败后超时，会触发重试机制。\
 5、并不是说是个队列就可以做类似秒杀等场景，因为队列也可以同时消费多个消息。\
 6、集群模式下，请一定注意不要别的消费者消费走，最好集群模式使用专业MQ。
@@ -68,7 +69,7 @@ composer require hyperf/async-queue
 declare(strict_types=1);
 return [
     // 默认队列
-    'default' => [
+    ConstCode::DEFAULT_QUEUE_NAME => [
         'driver' => Hyperf\AsyncQueue\Driver\RedisDriver::class,
         'redis' => [
             'pool' => 'default',
@@ -83,31 +84,31 @@ return [
         ],
     ],
     // 自定义队列进程的队列名称
-    'redis-queue' => [
+    ConstCode::NORMAL_QUEUE_NAME => [
         // 使用驱动(这里我们使用Redis作为驱动。AMQP等其他自行更换)
         'driver' => Hyperf\AsyncQueue\Driver\RedisDriver::class,
         // Redis连接信息
         'redis' => ['pool' => 'default'],
         // 队列前缀
-        'channel' => 'queue',
+        'channel' => 'redis-queue',
         // pop 消息的超时时间(详见：brPop)
-        'timeout' => 2,
+        'timeout' => 3,
         // 消息重试间隔(秒)
         // [注意]: 真正的重试时间为: retry_seconds + timeout = 7；实验所得
         'retry_seconds' => 5,
         // 消费消息超时时间
-        'handle_timeout' => 10,
+        'handle_timeout' => 5,
         // 消费者进程数
-        'processes' => 1,
+        'processes' => 10,
         // 并行消费消息数目
         'concurrent' => [
-            'limit' => 20,
+            'limit' => 100,
         ],
         // 当前进程处理多少消息后重启消费者进程(0||不写=>不重启)
         'max_messages' => 0,
     ],
     // 并行消费为1的特殊队列
-    'limit-queue' => [
+    ConstCode::LOCK_QUEUE_NAME => [
         // 使用驱动(这里我们使用Redis作为驱动。AMQP等其他自行更换)
         'driver' => Hyperf\AsyncQueue\Driver\RedisDriver::class,
         // Redis连接信息
@@ -115,7 +116,7 @@ return [
             'pool' => 'default',
         ],
         // 队列前缀
-        'channel' => 'limit',
+        'channel' => 'lock-queue',
         // pop 消息的超时时间(详见：brPop)
         'timeout' => 2,
         // 消息重试间隔(秒)
@@ -142,8 +143,9 @@ return [
 
 declare(strict_types=1);
 
-namespace App\Process;
+namespace App\Process\OverloadProcess;
 
+use App\Constants\ConstCode;
 use Hyperf\AsyncQueue\Process\ConsumerProcess;
 use Hyperf\Process\Annotation\Process;
 
@@ -156,7 +158,7 @@ use Hyperf\Process\Annotation\Process;
 class AsyncQueueProcess extends ConsumerProcess
 {
     // 这里的队列名称请和配置文件对应的队列名称保持一致
-    protected string $queue = 'redis-queue';
+    protected string $queue = ConstCode::NORMAL_QUEUE_NAME;
 }
 
 ```
@@ -183,20 +185,27 @@ namespace App\Job;
 
 use Hyperf\AsyncQueue\Job;
 
+/**
+ * 异步消息体抽象类.
+ * Class AbstractJob.
+ */
 abstract class AbstractJob extends Job
 {
     /**
      * 最大尝试次数(max = $maxAttempts+1).
+     * @var int 整型
      */
     public int $maxAttempts = 2;
 
     /**
      * 任务编号(传递编号相同任务会被覆盖!).
+     * @var string ''
      */
     public string $uniqueId;
 
     /**
      * 消息参数.
+     * @var array 关联数组
      */
     public array $params;
 
@@ -205,9 +214,7 @@ abstract class AbstractJob extends Job
         [$this->uniqueId, $this->params] = [$uniqueId, $params];
     }
 
-    public function handle()
-    {
-    }
+    public function handle() {}
 }
 
 ```
@@ -255,22 +262,48 @@ class DemoJob extends AbstractJob
 declare(strict_types=1);
 namespace App\Lib\RedisQueue;
 
+use App\Job\AbstractJob;
 use Hyperf\AsyncQueue\Driver\DriverFactory;
 use Hyperf\AsyncQueue\Driver\DriverInterface;
+use Hyperf\Cache\Cache;
 use Hyperf\Context\ApplicationContext;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class RedisQueueFactory
 {
     /**
-     * 获取队列实例.
+     * 根据队列名称判断是否投递消息.
+     */
+    public const IS_PUSH_KEY = 'IS_PUSH_%s';
+
+    /**
+     * 获取队列实例(后续准备废弃, 请使用safePush投递).
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
     public static function getQueueInstance(string $queueName = 'default'): DriverInterface
     {
         return ApplicationContext::getContainer()->get(DriverFactory::class)->get($queueName);
+    }
+
+    /**
+     * 根据外部变量控制是否投递消息.
+     * @return mixed 是否投递成功
+     * @throws InvalidArgumentException|NotFoundExceptionInterface 异常
+     * @throws ContainerExceptionInterface 异常
+     */
+    public static function safePush(AbstractJob $job, string $queueName = 'default', int $delay = 0): bool
+    {
+        // 动态读取外部变量, 判断是否投递
+        $key = sprintf(static::IS_PUSH_KEY, $queueName);
+        $isPush = ApplicationContext::getContainer()->get(Cache::class)->get($key);
+        if ($isPush !== false) {
+            $queueInstance = ApplicationContext::getContainer()->get(DriverFactory::class)->get($queueName);
+            return $queueInstance->push($job, $delay);
+        }
+        return false;
     }
 }
 

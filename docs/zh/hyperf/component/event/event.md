@@ -17,6 +17,7 @@ sidebar: [
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
+{text: '📡 命令行', link: '/zh/hyperf/component/command'},
 ]
 
 prev: /zh/hyperf/hyperf_component

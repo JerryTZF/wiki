@@ -17,11 +17,12 @@ sidebar: [
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
+{text: '📡 命令行', link: '/zh/hyperf/component/command'},
 ]
 
 
 prev: /zh/hyperf/component/exception
-next: /zh/hyperf/hyperf_component
+next: /zh/hyperf/component/command
 sidebarDepth: 3
 
 ---
@@ -47,6 +48,8 @@ composer require hyperf/logger
 ## 日志配置
 
 > config/autoload/logger.php
+
+---
 
 ```php:no-line-numbers
 <?php
@@ -92,6 +95,7 @@ return [
         ],
     ],
 ];
+
 ```
 
 > 示例：

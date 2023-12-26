@@ -17,6 +17,7 @@ sidebar: [
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
+{text: '📡 命令行', link: '/zh/hyperf/component/command'},
 ]
 
 prev: /zh/hyperf/component/queue/overview
@@ -44,13 +45,13 @@ sidebarDepth: 3
 ## 消费超时
 
 1、对于大量的计算服务或者耗时操作，我们应该尽量创建新的队列，且配置较长的超时时间，以便和普通的队列进行区分。\
-2、超时的任务会被放置 `timeout` 队列中，但是此时它已经被触发，即：超时了，但是依旧在执行。\
+2、超时的任务会被放置 `timeout` 队列中，但是此时它已经被触发，即：<font color="red">**超时了，但是依旧在执行**</font>。\
 3、对于是幂等性的任务，我们可以配置 `ReloadChannelListener` 监听器，它会将 `timeout` 中的消息放置 `waiting` 队列，继续消费。
 
 ## 消费异常
 
 1、当消费过程中出现异常抛出，任务会立即进行重试，直至达到最大重试上限。\
-2、请保证 `事务一致性` ！否则重试会与之前的执行产生意想不到的问题。例如：执行过的操作再次操作跳过，或者使用使用悲观锁。\
+2、**请保证 `事务一致性` ！否则重试会与之前的执行产生意想不到的问题。例如：执行过的操作再次操作跳过，或者使用使用悲观锁**。\
 3、如果无法保证 `事务一致性`，那么，可以在 `try-catch-finally` 中将该任务标记为失败(先保证该次消费"表面成功")，后续再次处理。
 
 ## 幂等性
@@ -65,7 +66,7 @@ sidebarDepth: 3
 
 ### 方案一
 
-1、投递消息前，先根据外部变量判断是否投递，用于控制队列流量。(可以通过创建新的命令行进行cli操作)\
+1、投递消息前，先根据外部变量判断是否投递，用于控制队列流量。(可以通过创建新的命令行进行cli操作) 参考：[队列投递开关](/zh/hyperf/component/command.html#队列投递开关)\
 2、加大 `等待时间` 的值，让存量任务尽可能的消费完。`swoole` 中的
 [等待时间](https://wiki.swoole.com/#/server/setting?id=max_wait_time)，`Hyperf` 中的
 [等待时间](https://hyperf.wiki/3.0/#/zh-cn/signal)

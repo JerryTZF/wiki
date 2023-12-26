@@ -17,6 +17,7 @@ sidebar: [
 {text: '📉 限流器', link: '/zh/hyperf/component/limit'},
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
+{text: '📡 命令行', link: '/zh/hyperf/component/command'},
 ]
 
 prev: /zh/hyperf/component/event/code
@@ -102,6 +103,36 @@ return [
 
 ## 定义任务
 
+:::: code-group
+::: code-group-item 定时任务抽象类
+```php:no-line-numbers
+<?php
+
+declare(strict_types=1);
+
+namespace App\Scheduler;
+
+use App\Constants\ConstCode;
+use Hyperf\Cache\Cache;
+use Hyperf\Context\ApplicationContext;
+
+class AbstractScheduler
+{
+    // 定时任务逻辑是否执行(外部变量控制)
+    protected bool $isRunning;
+
+    public function __construct()
+    {
+        $cache = ApplicationContext::getContainer()->get(Cache::class);
+        // 命令行命令 可以开启或关闭该开关 eg: php bin/hyperf crontab:switch start
+        $isRunning = $cache->get(ConstCode::SCHEDULER_IS_RUNNING_KEY, false);
+        $this->isRunning = ! ($isRunning === false);
+    }
+}
+
+```
+:::
+::: code-group-item 定时任务
 ```php:no-line-numbers
 <?php
 
@@ -123,14 +154,20 @@ use Throwable;
     memo: '测试定时任务', // 备注
     enable: 'isEnable', // 是否启动
 )]
-class DemoScheduler
+class DemoScheduler extends AbstractScheduler
 {
     // 就算不捕获异常, 底层执行也有事件触发器触发, 会被外部监听器监听到
     public function execute(): void
     {
+        if (! $this->isRunning) {
+            Log::stdout()->info('DemoScheduler 消费逻辑已跳出');
+            return;
+        }
         try {
+            // TODO your crontab task.
             Log::stdout()->info(Carbon::now()->toDateTimeString());
         } catch (Throwable $e) {
+            // TODO catch exception logic
             Log::stdout()->error($e->getMessage());
         } finally {
             Log::stdout()->info('DemoScheduler 执行完成');
@@ -139,16 +176,22 @@ class DemoScheduler
 
     public function isEnable(): bool
     {
-        return \Hyperf\Support\env('APP_ENV', 'dev') === 'dev';
+        return true;
     }
 }
 
 ```
+:::
+::::
+
+---
 
 ::: warning 【注意】
 
 - 注解字段请参考：[任务属性](https://hyperf.wiki/3.0/#/zh-cn/crontab?id=%e4%bb%bb%e5%8a%a1%e5%b1%9e%e6%80%a7)
 - 注意在注解定义时，规则存在 `\` 符号时，需要进行转义处理，即填写 `*\/5 * * * * *`
+- 新增命令行命令控制定时任务是否执行任务。当执行：`php bin/hyperf crontab:switch stop` 时，自定义进程依旧会按照执行规则执行，但是不会执行真正的业务逻辑。
+你可以理解为 `空转`。
 :::
 
 ---
@@ -162,6 +205,7 @@ php bin/hyperf.php crontab:run
 ```
 ---
 ![](https://img.tzf-foryou.xyz/img/20231226005658.png)
+
 ---
 
 ## 执行失败
