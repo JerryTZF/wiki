@@ -36,3 +36,7 @@ next: /zh/knowledge/debug/charles
 ---
 
 # API测试
+
+::: tip ︿(￣︶￣)︿
+常用 `Postman` 、`Apifox`、`Eolinker`
+:::
