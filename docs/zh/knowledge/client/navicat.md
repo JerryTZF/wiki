@@ -36,3 +36,11 @@ next: /zh/knowledge/client/mredis
 ---
 
 # Navicat
+
+::: tip 关系型数据库连接工具(按照我的使用优先级排序)
+:::
+
+- Navicat
+- DBeaver
+- Datagrip
+- PHPAdmin ~~(狗都不用)~~

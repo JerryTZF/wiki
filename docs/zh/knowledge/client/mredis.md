@@ -36,3 +36,9 @@ next: /zh/knowledge/client/docker
 ---
 
 # Mredis
+
+::: tip Redis数据库连接工具(按照我的使用优先级排序)
+:::
+
+- MRedis
+- Redis Desktop Manager
