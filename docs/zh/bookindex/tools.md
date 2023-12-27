@@ -34,3 +34,7 @@ next: /zh/bookindex/linux
 - [Idea其他](/zh/knowledge/idea/theme.html)
 
 ---
+
+- [压测工具](/zh/knowledge/debug/jmeter.html)
+- [API测试](/zh/knowledge/debug/postman.html)
+- [抓包工具](/zh/knowledge/debug/charles.html)

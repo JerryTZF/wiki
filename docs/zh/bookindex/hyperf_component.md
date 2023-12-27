@@ -38,3 +38,4 @@ next: /zh/bookindex/hyperf_skill
 - [限流器](/zh/hyperf/component/limit.md)
 - [异常处理器](/zh/hyperf/component/exception.md)
 - [日志系统](/zh/hyperf/component/log.md)
+- [命令行](/zh/hyperf/component/command.md)

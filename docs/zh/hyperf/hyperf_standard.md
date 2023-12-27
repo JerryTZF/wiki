@@ -73,6 +73,18 @@ sidebarDepth: 3
 }
 ```
 :::
+
+::: code-group-item 表单验证不通过
+```json:no-line-numbers
+// http code: 422
+{
+    "code": 9906,
+    "msg": "数据验证失败，原因如下：gid 商品id必须为整数",
+    "status": false,
+    "data": []
+}
+```
+:::
 ::::
 
 
@@ -128,6 +140,6 @@ return [
 
 TODO
 
-::: warning ￣□￣｜｜ 持续施工 :construction: 
-规划中。。。
+::: warning ￣□￣｜｜ 持续施工
+:construction: 规划中。。。
 :::
