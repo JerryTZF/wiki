@@ -38,3 +38,18 @@ next: /zh/bookindex/linux
 - [压测工具](/zh/knowledge/debug/jmeter.html)
 - [API测试](/zh/knowledge/debug/postman.html)
 - [抓包工具](/zh/knowledge/debug/charles.html)
+
+---
+
+- [Navicat](/zh/knowledge/client/navicat.html)
+- [Mredis](/zh/knowledge/client/mredis.html)
+- [Docker Desktop](/zh/knowledge/client/docker.html)
+
+---
+
+- [Brew](/zh/knowledge/mac/brew.html)
+- [Iterm2](/zh/knowledge/mac/iterm2.html)
+
+---
+
+- [其他](/zh/knowledge/sundry/picgo.html)
