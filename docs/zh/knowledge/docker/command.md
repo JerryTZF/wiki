@@ -1,15 +1,15 @@
 ---
 sidebar: [
-{text: 'Docker', collapsible: true, children:[
+{text: '🐳 Docker', collapsible: true, children:[
 {text: 'Basic', link: '/zh/knowledge/docker/docker'},
 {text: 'CI/CD', link: '/zh/knowledge/docker/cicd'},
 {text: 'Volume', link: '/zh/knowledge/docker/volume'},
 {text: 'Network', link: '/zh/knowledge/docker/network'},
 {text: '常用命令', link: '/zh/knowledge/docker/command'},
 ]},
-{text: 'Docker compose', link: '/zh/knowledge/docker/docker-compose'},
-{text: 'Docker swarm', link: '/zh/knowledge/docker/docker-swarm'},
-{text: 'K8s', link: '/zh/knowledge/docker/k8s'},
+{text: '🎛 Docker compose', link: '/zh/knowledge/docker/docker-compose'},
+{text: '🕸 Docker swarm', link: '/zh/knowledge/docker/docker-swarm'},
+{text: '🐙 K8s', link: '/zh/knowledge/docker/k8s'},
 ]
 
 prev: /zh/knowledge/docker/network
@@ -127,6 +127,66 @@ docker-compose exec CONTAINER bash
 docker-compose rm CONTAINER
 # 重启
 docker-compose restart
+```
+
+## docker swarm相关
+
+```shell:no-line-numbers
+docker swarm --help
+# Display and rotate the root CA
+docker swarm ca --help
+# Initialize a swarm
+docker swarm init --help
+# Join a swarm as a node and/or manager
+docker swarm join --help
+# Manage join tokens
+docker swarm join-token --help
+# Leave the swarm
+docker swarm leave --help
+# Unlock swarm
+docker swarm unlock --help
+# Manage the unlock key
+docker swarm unlock-key --help
+# Update the swarm
+docker swarm update --help
+```
+
+## docker stack相关
+
+```shell:no-line-numbers
+# Deploy a new stack or update an existing stack
+docker stack deploy --help
+# List stacks
+docker stack ls --help
+# List the tasks in the stack
+docker stack ps --help
+# Remove one or more stacks
+docker stack rm --help
+# List the services in the stack
+docker stack services --help
+```
+
+## docker service相关
+
+```shell:no-line-numbers
+# Create a new service
+docker service create
+# Display detailed information on one or more services
+docker service inspect
+# Fetch the logs of a service or task
+docker service logs
+# List services
+docker service ls
+# List the tasks of one or more services
+docker service ps
+# Remove one or more services
+docker service rm
+# Revert changes to a service's configuration
+docker service rollback
+# Scale one or multiple replicated services
+docker service scale
+# Update a service
+docker service update
 ```
 
 ## 清空container日志

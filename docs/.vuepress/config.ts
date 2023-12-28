@@ -45,7 +45,7 @@ export default defineUserConfig({
                     {text: '♨️ 编程语言', link: '/zh/knowledge/language'},
                 ]
             },
-            {text: '咖啡屋', link: '/zh/knowledge/overview'},
+            {text: '咖啡屋', link: '/zh/coffee/overview'},
             {text: 'Github', link: 'https://github.com/JerryTZF/wiki'},
         ],
 
