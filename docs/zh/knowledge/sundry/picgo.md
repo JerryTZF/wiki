@@ -45,3 +45,4 @@ next: /zh/knowledge/tools
 - 好用的图床软件: [picgo](https://github.com/Molunerfinn/PicGo)
 - 杂集: [uTools](https://u.tools/)
 - 分屏神器：[Moom](https://apps.apple.com/cn/app/moom/id419330170)
+- 快捷键提示器：[CheatSheet](https://www.cheatsheetapp.com)

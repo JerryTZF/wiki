@@ -12,13 +12,9 @@ sidebar: [
 {text: 'K8s', link: '/zh/knowledge/docker/k8s'},
 ]
 
-prev: /zh/knowledge/linux
-next: /zh/knowledge/docker/docker
+prev: /zh/knowledge/docker/docker-swarm
+next: /zh/knowledge/container
 
 ---
 
-# 容器相关
-
-::: tip 说明
-关于容器化(主要是Docker)的学习和使用是我在使用Swoole及相关框架后，感觉非常有意思而去了解和学习。这里主要记录关于Docker的内容。
-:::
+# k8s集群
