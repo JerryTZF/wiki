@@ -8,13 +8,12 @@ sidebar: [
 {text: '⏰ Crontab', link: '/zh/knowledge/linux/crontab'},
 ]
 
-prev: /zh/knowledge/sundry/picgo
-next: /zh/knowledge/linux/package
+prev: /zh/knowledge/linux/vim
+next: /zh/knowledge/linux/supervisorctl
 
 ---
 
-# 服务器相关
+# Systemctl
 
-::: tip 记录我常用的服务器相关内容
-:::
-
+目录
+[[TOC]]

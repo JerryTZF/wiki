@@ -30,17 +30,17 @@ export default defineUserConfig({
             {text: '概述', link: '/zh/overview'},
             {
                 text: 'Hyperf', children: [
-                    {text: 'web使用', link: '/zh/hyperf/hyperf_web'},
-                    {text: '常用组件', link: '/zh/hyperf/hyperf_component'},
-                    {text: '使用技巧', link: '/zh/hyperf/hyperf_skill'},
-                    {text: '规范相关', link: '/zh/hyperf/hyperf_standard'},
+                    {text: '🐞 web使用', link: '/zh/hyperf/hyperf_web'},
+                    {text: '📐 常用组件', link: '/zh/hyperf/hyperf_component'},
+                    {text: '💡 使用技巧', link: '/zh/hyperf/hyperf_skill'},
+                    {text: '🎱 规范相关', link: '/zh/hyperf/hyperf_standard'},
                 ]
             },
             {
                 text: '知识体系', children: [
-                    {text: '💻 工作流', link: '/zh/knowledge/workflow'},
-                    {text: '🔧 常用工具', link: '/zh/knowledge/tools'},
-                    {text: '💿 服务器', link: '/zh/knowledge/linux'},
+                    {text: '🖥 工作流', link: '/zh/knowledge/workflow'},
+                    {text: '🛠 常用工具', link: '/zh/knowledge/tools'},
+                    {text: '🌐️ 服务器', link: '/zh/knowledge/linux'},
                     {text: '📦 容器相关', link: '/zh/knowledge/container'},
                     {text: '♨️ 编程语言', link: '/zh/knowledge/language'},
                 ]
