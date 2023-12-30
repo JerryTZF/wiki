@@ -20,3 +20,10 @@ next: /zh/bookindex/container
 ---
 
 # System 服务器
+
+- [包管理](/zh/knowledge/linux/package.html)
+- [常用命令](/zh/knowledge/linux/command.html)
+- [Vim](/zh/knowledge/linux/vim.html)
+- [Systemctl](/zh/knowledge/linux/systemctl.html)
+- [Supervisorctl](/zh/knowledge/linux/supervisorctl.html)
+- [Crontab](/zh/knowledge/linux/crontab.html)
