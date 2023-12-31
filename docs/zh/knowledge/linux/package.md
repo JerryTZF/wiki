@@ -93,7 +93,7 @@ brew info 软件名
 brew uninstall 软件名
 ```
 
-## Ubentu(Debian)
+## Ubuntu(Debian)
 
 ::: tip 换源
 [阿里云镜像源](https://developer.aliyun.com/mirror/ubuntu)
@@ -138,4 +138,6 @@ apt-get clean
 apt-get autoclean  
 # 检查是否有损坏的依赖
 apt-get check 
+# 查看已经安装的软件包
+apt list --installed
 ```
