@@ -18,6 +18,7 @@ sidebar: [
 {text: '❌ 异常处理器', link: '/zh/hyperf/component/exception'},
 {text: '🖨 日志', link: '/zh/hyperf/component/log'},
 {text: '📡 命令行', link: '/zh/hyperf/component/command'},
+{text: '🔁 WebSocket', link: '/zh/hyperf/component/websocket'},
 ]
 
 prev: /zh/hyperf/component/event/code

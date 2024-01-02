@@ -26,6 +26,7 @@ sidebar: [
 {'text': '部署流程', link: '/zh/hyperf/web/deployment/detail'},
 ]},
 {text: '⛓ Websocket', collapsible: true, children: [
+{'text': '使用', link: '/zh/hyperf/web/websocket/detail'},
 ]},
 ]
 

@@ -31,8 +31,6 @@ sidebar: [
 {'text': '说明', link: '/zh/hyperf/web/deployment/description'},
 {'text': '部署流程', link: '/zh/hyperf/web/deployment/detail'},
 ]},
-{text: '⛓ Websocket', collapsible: true, children: [
-]},
 ]
 
 prev: /zh/hyperf/web/login/cookie

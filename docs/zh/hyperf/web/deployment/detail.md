@@ -31,13 +31,10 @@ sidebar: [
 {'text': '说明', link: '/zh/hyperf/web/deployment/description'},
 {'text': '部署流程', link: '/zh/hyperf/web/deployment/detail'},
 ]},
-{text: '⛓ Websocket', collapsible: true, children: [
-{'text': '二维码', link: '/zh/hyperf/web/image/qrcode'},
-{'text': '条形码', link: '/zh/hyperf/web/image/barcode'},
-{'text': '验证码', link: '/zh/hyperf/web/image/captcha'},
-]},
 ]
 
+prev: /zh/hyperf/web/deployment/description
+next: /zh/hyperf/hyperf_web
 sidebarDepth: 3
 ---
 
@@ -289,7 +286,7 @@ server {
 
     # 静态文档(API静态文档)
     location /swagger/ {
-    	root /home/hyperf-v3/;
+    	root /your/path/hyperf-v3/;
     }
 
     # wss服务
