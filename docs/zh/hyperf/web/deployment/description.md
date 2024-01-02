@@ -35,38 +35,18 @@ sidebar: [
 ]},
 ]
 
-prev: /zh/hyperf/web/login/session
-next: /zh/hyperf/web/deployment/description
+prev: /zh/hyperf/web/login/qa
+next: /zh/hyperf/web/deployment/detail
 sidebarDepth: 3
 ---
 
-# Q&A
+# 说明
 
 目录
-[[toc]]
+[[TOC]]
 
-## Cookie和Session迥异点
+::: tip 【说明】
+主要以我的 `WIKI` 以及 `Hyperf-V3` 项目部署为说明。
+> **Hyperf-V3** 是自己的脚手架项目且辅助 `wiki` 文档中的示例。
 
-### 不同点
-- Cookie的信息存储在客户端(一般指浏览器)，每次请求都会将这些信息通过Cookie这种特殊的参数携带到服务端。
-- Session的信息存储在服务端，将Cookie作为媒介，标记一个唯一ID(SESSION_ID)，后续通过Cookie将该ID传输到服务端，解析对应的数据。
-- Session可以存储 **敏感的**、**任意格式的**、**任意大小的**数据，因为数据是在服务端。
-- Cookie只能存储 **4KB**、**非敏感的**、**ASCII编码的** 数据。
-- Cookie一般一个站点上限150。
-- Session一个会话可以存储几乎无限数据。
-
-### 相同点
-
-- 都依赖浏览器Cookie机制。
-- 都存在跨域问题。客户端请求多个域名下的服务目前是很正常的情况。
-- 都可以标记HTTP状态。
-
-## 使用场景
-
-我个人倾向于 `HTTP Server` 的 `API` 调用使用 `JWT` + `Redis存储`。因为不用区分客户端类型，不用依赖浏览器机制。
-
----
-
-::: tip 😅
-其实这些东西挺无聊的，没什么太多的意义。但是记录下就当填充下内容吧。
 :::

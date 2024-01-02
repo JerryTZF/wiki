@@ -27,10 +27,16 @@ sidebar: [
 {'text': 'Session', link: '/zh/hyperf/web/login/session'},
 {'text': 'Q&A', link: '/zh/hyperf/web/login/qa'},
 ]},
+{text: '📀 服务部署', collapsible: true, children: [
+{'text': '说明', link: '/zh/hyperf/web/deployment/description'},
+{'text': '部署流程', link: '/zh/hyperf/web/deployment/detail'},
+]},
+{text: '⛓ Websocket', collapsible: true, children: [
+]},
 ]
 
 prev: /zh/hyperf/web/convert/aws4
-next: /zh/hyperf/hyperf_web
+next: /zh/hyperf/web/login/jwt
 sidebarDepth: 3
 ---
 

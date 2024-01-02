@@ -21,6 +21,12 @@ sidebar: [
 {'text': 'AWS4', link: '/zh/hyperf/web/convert/aws4'},
 {'text': 'RC4', link: '/zh/hyperf/web/convert/rc4'},
 ]},
+{text: '📀 服务部署', collapsible: true, children: [
+{'text': '说明', link: '/zh/hyperf/web/deployment/description'},
+{'text': '部署流程', link: '/zh/hyperf/web/deployment/detail'},
+]},
+{text: '⛓ Websocket', collapsible: true, children: [
+]},
 ]
 
 prev: /zh/hyperf/web/convert/rc4

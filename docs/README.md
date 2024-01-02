@@ -2,6 +2,8 @@
 home: true
 tagline: 服务器、框架、编程语言、文档、虚拟化
 
+heroText: Jerry's WIKI
+
 actions:
 - text: 查看概述
   link: /zh/overview
