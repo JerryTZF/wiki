@@ -1,4 +1,6 @@
 ---
+hostname: https://wiki.tzf-foryou.xyz
+colorMode: auto
 home: true
 tagline: 服务器、框架、编程语言、文档、虚拟化
 
@@ -6,7 +8,7 @@ heroText: Jerry's WIKI
 
 actions:
 - text: 查看概述
-  link: /zh/overview
+  link: overview
   type: primary
 - text: Wiki目录
   link: /zh/bookindex
@@ -40,9 +42,9 @@ footerHtml: true
 >
 > 2、安装依赖 `npm install –save-dev`
 >
-> 3、相关的配置参数见：`vuepress/docs/.vuepress/config.ts`
+> 3、相关的配置参数见：`vuepress/config.ts`
 >
-> 4、读懂 :arrow_up: ，请将文档写入 `vuepress/docs/zh` 目录即可
+> 4、读懂 :arrow_up: ，请将文档写入 `vuepress/docs/` 目录即可
 
 ---
 
