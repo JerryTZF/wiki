@@ -145,8 +145,8 @@ public function createOrderWithCondition(int $uid, int $gid, int $number = 1): s
 
 ---
 
-:::: code-group
-::: code-group-item 控制器示例
+::: tabs
+@tab 控制器示例
 ```php:no-line-numbers
 /**
  * 创建订单(版本控制乐观锁).
@@ -165,8 +165,7 @@ public function createOrderByVersion(LockRequest $request): array
     return $this->result->setData(['oder_no' => $orderNo])->getResult();
 }
 ```
-:::
-::: code-group-item 逻辑示例
+@tab 逻辑示例
 ```php:no-line-numbers
 /**
  * 根据版本控制创建订单(版本控制乐观锁).
@@ -218,7 +217,6 @@ public function createOrderWithVersion(int $uid, int $gid, int $number = 1): str
 }
 ```
 :::
-::::
 
 ---
 
@@ -233,8 +231,8 @@ public function createOrderWithVersion(int $uid, int $gid, int $number = 1): str
 
 ---
 
-:::: code-group
-::: code-group-item 控制器示例
+::: tabs
+@tab 控制器示例
 ```php:no-line-numbers
 /**
  * 创建订单(版本控制+自旋).
@@ -253,8 +251,7 @@ public function createOrderByVersionSpin(LockRequest $request): array
     return $this->result->setData(['oder_no' => $orderNo])->getResult();
 }
 ```
-:::
-::: code-group-item 逻辑示例
+@tab 逻辑示例
 ```php:no-line-numbers
 /**
  * 版本控制+自旋 创建订单(乐观锁+自旋).
@@ -311,7 +308,6 @@ public function createOrderWithSpin(int $uid, int $gid, int $number = 1): string
 }
 ```
 :::
-::::
 
 ---
 
