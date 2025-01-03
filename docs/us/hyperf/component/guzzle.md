@@ -29,23 +29,23 @@ sidebarDepth: 3
 
 # GuzzleHttp
 
-目录
+Index
 [[TOC]]
 
 ::: tip
-基于协程的 `GuzzleHttp` 客户端的使用。 \
-使用详情请阅：[GuzzleHttp文档](https://guzzle-cn.readthedocs.io/zh_CN/latest/overview.html)
+Usage of the coroutine-based `GuzzleHttp` client \
+For detailed usage, please refer to：[GuzzleHttp Doc](https://guzzle-cn.readthedocs.io/zh_CN/latest/overview.html)
 :::
 
-## 安装依赖
+## Install Dependencies
 
-> [标准库地址](https://packagist.org/packages/hyperf/guzzle)
+> [Standard Library Address](https://packagist.org/packages/hyperf/guzzle)
 
 ```shell:no-line-numbers
 composer require hyperf/guzzle
 ```
 
-## 封装工具类
+## Encapsulation Of Utility Class.
 
 ```php:no-line-numbers
 <?php

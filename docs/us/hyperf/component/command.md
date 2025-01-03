@@ -27,22 +27,22 @@ sidebarDepth: 3
 
 ---
 
-# 命令行
+# Command
 
-目录
+Index
 [[TOC]]
 
 ::: tip
-这里列举了我增加的一些命令行，关于使用，请参考文档：[命令行](https://hyperf.wiki/3.0/#/zh-cn/command)
+Here are some command-line entries I added. For usage, please refer to the documentation: [Command](https://hyperf.wiki/3.0/#/zh-cn/command)
 :::
 
-## 执行定时任务开关
+## Scheduled Task Switch
 
-::: tip 【说明】
-通过改变外部变量，从而实现是否跳过定时任务的消费逻辑，打个比方：发动机在运转，但是没有挂挡。\
-执行进程会按照规则执行该任务，但是任务会优先判断外部变量，从而判断是否要执行定时任务。
+::: tip 【Note】
+By changing an external variable, you can control whether to skip the consumption logic of the scheduled task. For example: the engine is running, but the gear is not engaged.
+The execution process will run the task according to the rules, but the task will first check the external variable to decide whether to execute the scheduled task.
 
-**命令**：
+**Shell**：
 ```shell:no-line-numbers
 php bin/hyperf crontab:switch start|stop
 ```
@@ -51,7 +51,7 @@ php bin/hyperf crontab:switch start|stop
 
 ---
 
-::: details 查看代码
+::: details Detail
 ```php:no-line-numbers
 <?php
 
@@ -110,19 +110,19 @@ class SchedulerCommand extends HyperfCommand
 
 ---
 
-## 队列投递开关
+## Maintenance Mode
 
-::: tip 【说明】
-通过改变外部变量，从而实现是否投递Redis队列任务。
+::: tip 【Note】
+By changing an external variable, you can control whether to dispatch tasks to the Redis queue.
 
-**命令**：
+**Shell**：
 ```shell:no-line-numbers
 php bin/hyperf queue:switch ${QUEUE_NAME} start|stop
 ```
 :::
 
 ---
-::: details 查看代码
+::: details Detail
 ```php:no-line-numbers
 <?php
 
@@ -204,17 +204,17 @@ class QueuePushCommand extends HyperfCommand
 
 ---
 
-## 维护模式
+## Maintenance Mode
 
 ::: tip
-命令行用于修改外部变量，中间件判断该变量是否处于维护模式。
+The command-line tool is used to modify the external variable, and the middleware checks whether the variable is in maintenance mode.
 :::
 
 ---
 
-### 命令行代码
+### Command-Line Code
 
-::: details 查看代码
+::: details Detail
 ```php:no-line-numbers
 <?php
 
@@ -273,9 +273,9 @@ class FixModeCommand extends HyperfCommand
 
 ---
 
-### 中间件代码
+### Middleware Code
 
-::: details
+::: details Detail
 ```php:no-line-numbers
 <?php
 

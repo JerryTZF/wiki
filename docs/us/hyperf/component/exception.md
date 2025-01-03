@@ -27,28 +27,28 @@ sidebarDepth: 3
 
 ---
 
-# 异常处理器
+# Exception
 
-目录
+Index
 [[TOC]]
 
 ::: tip
-1. 任何的 **HTTP请求** 的返回均应该返回标准格式的响应。
-2. `代码异常` 和 `逻辑异常` 都应该捕获和处理，即：均返回 `200`、`401`、`422`、`500`  状态码，且为统一的 `JSON` 格式。
-3. `worker` 进程中的异常配置后，底层框架会自动处理，但是 `自定义进程`，`队列消费进程` 中的异常应自己处理。
-4. 三方包的底层异常，也应该封装对应的异常处理器。
+1. The return of any ***HTTP*** request should follow a standard response format.
+2. Both `code exceptions` and `logic exceptions` should be caught and handled, i.e., return status codes `200`, `401`, `422`, `500`, all in a unified `JSON` format.
+3. After configuring exceptions in the `worker process`, the underlying framework will handle them automatically, but exceptions in `custom processes` and queue `consumption processes` should be handled manually.
+4. The underlying exceptions of third-party packages should also be encapsulated with corresponding exception handlers.
 
 ---
-所有异常处理器参见：
-[异常处理器](https://github.com/JerryTZF/hyperf-v3/tree/main/app/Exception/Handler)
+Refer to all exception handlers at:
+[Exception Handler](https://github.com/JerryTZF/hyperf-v3/tree/main/app/Exception/Handler)
 
 :::
 
 ---
 
-## 封装异常处理器
+## Encapsulation Of Exception Handler.
 
-**普通异常处理器**
+**General Exception Handler**
 
 ```php:no-line-numbers
 <?php
@@ -103,7 +103,7 @@ class AlibabaExceptionHandler extends ExceptionHandler
 ```
 ---
 
-**全局异常处理器**
+**Global Exception Handler**
 
 ```php:no-line-numbers
 <?php
@@ -161,10 +161,10 @@ class AppExceptionHandler extends ExceptionHandler
 
 ```
 
-## 注册异常处理器
+## Register Exception Handler
 
-::: warning 【说明】
-顺序应该由颗粒度有小到大。
+::: warning 【Note】
+The order should be from small to large granularity.
 :::
 
 ---
@@ -210,9 +210,9 @@ return [
 
 ```
 
-## 封装自定义异常
+## Encapsulation Of Custom Exception
 
-> 一般用于自己业务抛出的异常。
+> Typically used for exceptions thrown by your own business logic.
 
 ```php:no-line-numbers
 <?php

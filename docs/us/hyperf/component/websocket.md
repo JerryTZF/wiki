@@ -28,27 +28,27 @@ sidebarDepth: 3
 
 ---
 
-# Websocket使用
+# WebSocket
 
-目录
+Index
 [[toc]]
 
-## 安装依赖
+## Install Dependencies
 
-> [标准库地址](https://packagist.org/packages/hyperf/websocket-server)
+> [Standard Library Address](https://packagist.org/packages/hyperf/websocket-server)
 
 ```shell:no-line-numbers
 composer require hyperf/websocket-server
 ```
 ---
-::: tip 如果作为客户端使用，请安装客户端。
+::: tip If used as a client, please install the client.
 :::
 
 ```shell:no-line-numbers
 composer require hyperf/websocket-client
 ```
 
-## 配置服务
+## Configure The Service
 
 > config/autoload/server.php
 
@@ -87,7 +87,7 @@ return [
 
 ``` 
 
-## 配置路由
+## Configure The Route
 
 ```php:no-line-numbers
 <?php
@@ -105,7 +105,7 @@ Router::addServer('ws', function () {
 
 ```
 
-## 控制器
+## Controller
 
 > app/Controller/WebSocket/WebSocketController.php
 
@@ -167,19 +167,19 @@ class WebSocketController extends AbstractWebSocketController implements OnMessa
 
 ```
 
-## 自定义回调服务
+## Custom Callback Service
 
-::: danger 为什么要自定义回调服务
-1. `Hyperf\WebSocketServer\Server` 的协议升级中间件`Hyperf\WebSocketServer\CoreMiddleware`并未处理 `handleNotFound()` 方法。即：请求一个不存在的WS路由会抛出异常。
-2. 可以自行处理 `ws` 业务中间件的处理结果。例如鉴权中间件的判断可以在自定义的 `onHandShake` 回调中处理，而不用在已经握手成功后再做处理判断。
-3. 可以使用自定义异常进行处理 `ws` 的异常抛出。
-   :::
+::: danger Why customize the callback service
+1. The protocol upgrade middleware `Hyperf\WebSocketServer\CoreMiddleware` of `Hyperf\WebSocketServer\Server` does not handle the `handleNotFound()` method. In other words, requesting a non-existent WS route will throw an exception.
+2. You can handle the results of `ws` business middleware yourself. For example, the authentication middleware check can be processed in a custom `onHandShake` callback, instead of handling it after the handshake is successful.
+3. You can use custom exceptions to handle the throwing of `ws` exceptions.
+:::
 
 ---
 
 > app/Server/WebsocketServer.php
 
-::: details 自定义回调服务
+::: details Detail
 ```php:no-line-numbers
 <?php
 
@@ -319,10 +319,10 @@ class WebsocketServer extends Server
 ```
 :::
 
-## 自定义协议升级中间件
+## Custom Protocol Upgrade Middleware
 
-::: tip 说明
-补充了路由不正确时的处理方法，内置的 `Hyperf\WebSocketServer\CoreMiddleware` 并不处理 `404`。
+::: tip Note
+Added a handling method for incorrect routes, as the built-in `Hyperf\WebSocketServer\CoreMiddleware` does not handle `404` errors.
 :::
 
 > app/Middleware/WebSocketCoreMiddleware.php
@@ -389,24 +389,26 @@ class WebSocketCoreMiddleware extends \Hyperf\HttpServer\CoreMiddleware
 
 ```
 
-## 鉴权中间件
+## Authentication Middleware
 
-::: warning 鉴权方式
-对于 `WebSocket` 的鉴权，有两种方式和两种顺序：
+::: warning Authentication Methods
+There are two methods and two sequences for authenticating `WebSocket`:
 
-**两种方式**: \
-1、通过参数传递进行协议升级请求。eg: wss://domain.com/wss?name=Jerry&pwd=xxx。我个人不建议使用这样的参数，一来不够安全，二来不好兼容
-`Http` 服务中已有的鉴权方式(JWT或者其他)。\
-2、通过添加请求头传递 `jwt` 或 `token`。个人建议 使用 `Authorization` 头信息传递令牌进行鉴权。
+**Two methods:**
 
-**两种顺序**: \
-1、握手成功后，在 `onOpen()` 回调中获取头信息或者参数进行业务鉴权处理判断。这种方式其实已经是连接成功(`fd`已经生成)了，然后又主动断开。会有开销。\
-2、握手时，通过调用鉴权中间件进行处理判断，然后判断中间件的结果，来判断是否要握手成功。个人推荐该方式。
+1. Passing parameters in the protocol upgrade request. For example: `wss://domain.com/wss?name=Jerry&pwd=xxx`. 
+Personally, I do not recommend using such parameters because they are not secure and are not well-compatible with the existing authentication methods (e.g., JWT or others) in the Http service.
+2. Passing `jwt` or `token` via request headers. I personally recommend using the `Authorization` header to pass the token for authentication.
+
+**Two sequences:**
+
+1. After the handshake is successful, get the header information or parameters in the `onOpen()` callback to perform business authentication. This method actually means that the connection has already been established (with the `fd` generated), and then it actively disconnects, which incurs overhead.
+2. During the handshake, authentication is performed by calling the authentication middleware, and the result of the middleware is used to determine whether to successfully complete the handshake. This method is personally recommended.
 :::
 
 ---
 
-### 代码
+### Auth Middleware
 
 > app/Middleware/WebSocketAuthMiddleware.php
 
@@ -464,7 +466,7 @@ class WebSocketAuthMiddleware extends AbstractMiddleware
 
 ```
 
-### 注册
+### Register
 
 ```php:no-line-numbers
 <?php
@@ -483,9 +485,9 @@ return [
 
 ```
 
-## 自定义异常
+## Custom Exception
 
-### 代码
+### Handler
 
 > app/Exception/Handler/WebsocketExceptionHandler.php
 
@@ -530,7 +532,7 @@ class WebsocketExceptionHandler extends ExceptionHandler
 
 ```
 
-### 注册
+### Register
 
 > config/autoload/exceptions.php
 

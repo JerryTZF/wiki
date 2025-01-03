@@ -28,25 +28,24 @@ sidebarDepth: 3
 
 ---
 
-# 日志
+# Logs
 
-目录
+Index
 [[TOC]]
 
 ::: tip
-- 日志处理的 `Handler` 有 `Monolog\Handler\StreamHandler` 、 `Monolog\Handler\RotatingFileHandler`，这里的配置
-  是 `按照日期轮转` 的处理器。
-- `INFO` 及以上级别的日志会写入info日志，`ERROR` 及以上级别的日志会写入error日志。按照每天进行分割。
-- `Hyperf` 是参考了 `monolog` 的一些内容，详见：[Monolog](https://github.com/Seldaek/monolog)。
+- The log handling `Handler` includes `Monolog\Handler\StreamHandler` and `Monolog\Handler\RotatingFileHandler`, where the configuration is for a processor that rotates based on the date.
+- Logs of `INFO` level and above will be written to the info log, and logs of `ERROR` level and above will be written to the error log. The logs are split by day.
+- `Hyperf` has referenced some content from `monolog`. For more details, see: [Monolog](https://github.com/Seldaek/monolog).
 :::
 
-## 安装依赖
+## Install Dependencies
 
 ```shell:no-line-numbers
 composer require hyperf/logger
 ```
 
-## 日志配置
+## Log Config
 
 > config/autoload/logger.php
 
@@ -99,10 +98,10 @@ return [
 
 ```
 
-> 示例：
+> Example: 
 > ![](https://img.tzf-foryou.xyz/img/20220320181530.png)
 
-## 封装调用
+## Encapsulation Of The Call.
 
 ```php:no-line-numbers
 <?php

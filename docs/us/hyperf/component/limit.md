@@ -27,24 +27,24 @@ sidebarDepth: 3
 
 ---
 
-# 限流器
+# Rate Limiter
 
-目录
+Index
 [[TOC]]
 
 ::: tip
-详情参见：[限流器](https://hyperf.wiki/3.0/#/zh-cn/rate-limit)
+Please refer to：[Limiter](https://hyperf.wiki/3.0/#/zh-cn/rate-limit)
 :::
 
-## 安装依赖
+## Install Dependencies
 
-> [标准库地址](https://packagist.org/packages/hyperf/rate-limit)
+> [Standard Library Address](https://packagist.org/packages/hyperf/rate-limit)
 
 ```shell:no-line-numbers
 composer require hyperf/rate-limit
 ``` 
 
-## 使用
+## Usage
 
 ```php:no-line-numbers
 #[GetMapping(path: 'rate/limit')]
