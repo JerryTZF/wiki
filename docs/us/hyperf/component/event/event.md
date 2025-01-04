@@ -36,7 +36,7 @@ Index
 ::: tip
 - The event mechanism consists of three roles: **`Trigger`** 、 **`Listener`** 、 **`Event`**。
 - Events can be classified into system events and custom events; for system events, you can directly write listeners to listen for them. [Etc.](https://hyperf.wiki/3.0/zh-cn/imgs/hyperf-events.svg)
-- Event-Role Mapping：![](http://img.tzf-foryou.xyz/img/20220321102539.png)
+- Event-Role Mapping：![](https://img.tzf-foryou.xyz/img/20220321102539.png)
 :::
 
 ::: warning 【Guideline】

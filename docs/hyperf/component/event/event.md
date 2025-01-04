@@ -36,7 +36,7 @@ sidebarDepth: 3
 ::: tip
 - 事件机制共分为三个角色：**`触发器`** 、 **`监听器`** 、 **`事件`**。
 - 事件可以分为系统事件、自定义事件；对于系统事件，可以直接写监听器进行监听，[详见图](https://hyperf.wiki/3.0/zh-cn/imgs/hyperf-events.svg)
-- 对应关系：![](http://img.tzf-foryou.xyz/img/20220321102539.png)
+- 对应关系：![](https://img.tzf-foryou.xyz/img/20220321102539.png)
 :::
 
 ::: warning 【规范】
