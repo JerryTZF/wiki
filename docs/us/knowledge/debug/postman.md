@@ -31,10 +31,12 @@ sidebar: [
 ]}
 ]
 
-prev: /us/knowledge/git/qa
-next: /us/knowledge/idea/keymap
+prev: /us/knowledge/debug/jmeter
+next: /us/knowledge/debug/charles
 ---
 
-# Others
+# API Test
 
-- [github Doc](https://docs.github.com/zh/authentication)
+::: tip ︿(￣︶￣)︿
+`Postman` 、`Apifox`、`Eolinker`
+:::

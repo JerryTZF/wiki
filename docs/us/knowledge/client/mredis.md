@@ -31,10 +31,14 @@ sidebar: [
 ]}
 ]
 
-prev: /us/knowledge/git/qa
-next: /us/knowledge/idea/keymap
+prev: /us/knowledge/client/navicat
+next: /us/knowledge/client/docker
 ---
 
-# Others
+# Mredis
 
-- [github Doc](https://docs.github.com/zh/authentication)
+::: tip Redis数据库连接工具(按照我的使用优先级排序)
+:::
+
+- MRedis
+- Redis Desktop Manager

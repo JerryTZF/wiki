@@ -31,10 +31,31 @@ sidebar: [
 ]}
 ]
 
-prev: /us/knowledge/git/qa
-next: /us/knowledge/idea/keymap
+prev: /us/knowledge/idea/vcs
+next: /us/knowledge/debug/jmeter
 ---
 
 # Others
 
-- [github Doc](https://docs.github.com/zh/authentication)
+
+目录
+[[TOC]]
+
+## Commonly Used PlugInsAre Recommended
+
+- [.env file support](https://plugins.jetbrains.com/plugin/9525--env-files-support)
+- [.ignore](https://plugins.jetbrains.com/plugin/7495--ignore)
+- [ideolog](https://plugins.jetbrains.com/plugin/9746-ideolog)
+- [Batch Scripts Support](https://plugins.jetbrains.com/plugin/265-batch-scripts-support)
+- [Chinese (Simplified) Language Pack / 中文语言包](https://plugins.jetbrains.com/plugin/13710-chinese-simplified-language-pack----)
+- [PHP Annotations](https://plugins.jetbrains.com/plugin/7320-php-annotations)
+- [PlantUML Integration](https://plugins.jetbrains.com/plugin/7017-plantuml-integration)
+- [Rainbow Brackets](https://plugins.jetbrains.com/plugin/10080-rainbow-brackets)
+- [Translation](https://plugins.jetbrains.com/plugin/8579-translation)
+- [Nginx Configuration](https://plugins.jetbrains.com/plugin/15461-nginx-configuration)
+- ...
+
+## SFTP
+
+
+## Supplement

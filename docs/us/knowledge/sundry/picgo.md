@@ -31,10 +31,18 @@ sidebar: [
 ]}
 ]
 
-prev: /us/knowledge/git/qa
-next: /us/knowledge/idea/keymap
+prev: /us/knowledge/mac/iterm2
+next: /us/knowledge/tools
 ---
 
-# Others
+# 列表
 
-- [github Doc](https://docs.github.com/zh/authentication)
+::: tip 这里推荐一些我觉着好用的软件
+:::
+
+- 好用的粘贴板：[clipy](https://github.com/Clipy/Clipy)
+- 好用的截图软件：[Xnip](https://zh.xnipapp.com/)
+- 好用的图床软件: [picgo](https://github.com/Molunerfinn/PicGo)
+- 杂集: [uTools](https://u.tools/)
+- 分屏神器：[Moom](https://apps.apple.com/cn/app/moom/id419330170)
+- 快捷键提示器：[CheatSheet](https://www.cheatsheetapp.com)

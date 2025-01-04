@@ -31,10 +31,30 @@ sidebar: [
 ]}
 ]
 
-prev: /us/knowledge/git/qa
-next: /us/knowledge/idea/keymap
+prev: /us/knowledge/client/mredis
+next: /us/knowledge/mac/brew
 ---
 
-# Others
+# Docker Desktop
 
-- [github Doc](https://docs.github.com/zh/authentication)
+::: tip 我一般讲docker作为我的本地环境
+:::
+
+![](https://img.tzf-foryou.xyz/img/20231228004228.png)
+
+---
+
+
+::: tip 我的 docker hub 镜像
+:::
+
+---
+
+> 集成了 `nginx`、`php(多版本)`、`composer`、`supervisor` 的环境镜像。
+
+PHP扩展包含 `swoole` 、`redis`、 `gd`、`imagick`、 `mysqli`、 `pdo_mysql` 、`zip`、 `mcrypt`, \
+详情见：[fpm-nginx-image](https://github.com/JerryTZF/fpm-nginx-image)
+
+---
+
+![](https://img.tzf-foryou.xyz/img/20231228004349.png)

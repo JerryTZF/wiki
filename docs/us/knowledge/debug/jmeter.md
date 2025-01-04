@@ -1,69 +1,69 @@
 ---
 sidebar: [
-{text: '🚩 版本控制(Git)', collapsible: true, children:[
-{text: '秘钥的配置和使用', 'link': 'knowledge/git/keys'},
-{text: '多平台多仓库秘钥管理', 'link': 'knowledge/git/multiple'},
-{text: '多人协同开发', 'link': 'knowledge/git/cooperation'},
-{text: '常见场景和对策', 'link': 'knowledge/git/qa'},
-{text: '其他', 'link': 'knowledge/git/others'},
+{text: '🚩 Version Control (Git)', collapsible: true, children: [
+{text: 'Key Configuration and Usage', 'link': 'knowledge/git/keys'},
+{text: 'Multi-platform and Multi-repository Key Management', 'link': 'knowledge/git/multiple'},
+{text: 'Collaborative Development', 'link': 'knowledge/git/cooperation'},
+{text: 'Common Scenarios and Solutions', 'link': 'knowledge/git/qa'},
+{text: 'Others', 'link': 'knowledge/git/others'},
 ]},
-{text: '✏️ 编辑器(Idea)', collapsible: true, children:[
-{text: '快捷键修改', 'link': 'knowledge/idea/keymap'},
-{text: 'VCS操作', 'link': 'knowledge/idea/vcs'},
-{text: '其他', 'link': 'knowledge/idea/theme'},
+{text: '✏️ Editor (Idea)', collapsible: true, children: [
+{text: 'Shortcut Key Modification', 'link': 'knowledge/idea/keymap'},
+{text: 'VCS Operations', 'link': 'knowledge/idea/vcs'},
+{text: 'Others', 'link': 'knowledge/idea/theme'},
 ]},
-{text: '🎁 调试工具', collapsible: true, children: [
-{text: '压测工具', 'link': 'knowledge/debug/jmeter'},
-{text: 'API测试', 'link': 'knowledge/debug/postman'},
-{text: '抓包工具', 'link': 'knowledge/debug/charles'},
+{text: '🎁 Debugging Tools', collapsible: true, children: [
+{text: 'Stress Testing Tools', 'link': 'knowledge/debug/jmeter'},
+{text: 'API Testing', 'link': 'knowledge/debug/postman'},
+{text: 'Packet Sniffing Tools', 'link': 'knowledge/debug/charles'},
 ]},
-{text: '🔭 客户端', collapsible: true, children: [
+{text: '🔭 Client', collapsible: true, children: [
 {text: 'Navicat', 'link': 'knowledge/client/navicat'},
 {text: 'Mredis', 'link': 'knowledge/client/mredis'},
-{text: 'DockerDesktop', 'link': 'knowledge/client/docker'},
+{text: 'Docker Desktop', 'link': 'knowledge/client/docker'},
 ]},
-{text: '🍎 Mac工具', collapsible: true, children: [
+{text: '🍎 Mac Tools', collapsible: true, children: [
 {text: 'Brew', 'link': 'knowledge/mac/brew'},
 {text: 'Iterm2', 'link': 'knowledge/mac/iterm2'},
 ]},
-{text: '🌈 杂项', collapsible: true, children: [
-{text: '列表', 'link': 'knowledge/sundry/picgo'},
+{text: '🌈 Miscellaneous', collapsible: true, children: [
+{text: 'List', 'link': 'knowledge/sundry/picgo'},
 ]}
 ]
 
-prev: /knowledge/idea/theme
-next: /knowledge/debug/postman
+prev: /us/knowledge/idea/theme
+next: /us/knowledge/debug/postman
 ---
 
-# 压测工具
+# Stress Testing Tools
 
-目录
+Index
 [[toc]]
 
 ## AB
 
-> ab是apachebench命令的缩写，ab命令会创建多个并发访问线程，模拟多个访问者同时对某一HTTP URL地址进行访问。
+> `ab` is short for Apache Bench, a command-line tool that creates multiple concurrent threads to simulate multiple users accessing an HTTP URL simultaneously.
 
-### 常用参数
+### Common Parameters
 
 ```text:no-line-numbers
--n 测试会话中所执行的请求个数,默认仅执行一个请求,如果不指定-t参数，默认执行完所有请求后自动结束压测。
--c 一次产生的请求个数,即同一时间发出多少个请求,默认为一次一个,此参数可以控制对服务器的单位时间内的并发量。
--t 测试所进行的最大秒数,默认为无时间限制....其内部隐含值是[-n 50000],它可以使对服务器的测试限制在一个固定的总时间以内,如果时间到了，请求个数还未执行完，也会被停止。
--p 包含了需要POST的数据的文件,数据格式以接口请求参数定义的格式为准,eg. xxx.json。
--T POST 数据所使用的Content-type头信息,指定请求参数格式，eg. application/json。
--r 在接口返回失败后，默认会终止压测，添加此参数后压测会继续进行。
--C 对请求附加一个Cookie行，其典型形式是name=value的参数对,此参数可以重复。
--H 对请求附加额外的头信息,此参数的典型形式是一个有效的头信息行,其中包含了以冒号分隔的字段和值的对(如"Accept-Encoding:zip/zop;8bit")。
--X 对请求使用代理服务器。
--k 启用HTTP KeepAlive(长连接)功能,即在一个HTTP会话中执行多个请求,默认为不启用KeepAlive功能。
+-n Specifies the total number of requests to perform during the test. By default, only one request is executed. If the -t parameter is not specified, the test will automatically end after completing all the requests.
+-c Specifies the number of concurrent requests to make, i.e., how many requests are sent at the same time. The default is one request at a time. This parameter controls the concurrency rate of requests to the server within a given time frame.
+-t Specifies the maximum duration of the test in seconds. By default, there is no time limit. Its implicit value is [-n 50000]. This option restricts the test to a fixed total time, and if the time expires before all requests are completed, the test will stop.
+-p Specifies a file containing data to be sent via POST. The data format should match the interface request parameters, e.g., xxx.json.
+-T Specifies the Content-type header used for POST data, to define the request data format, e.g., application/json.
+-r By default, the test stops if a request fails. Adding this parameter allows the test to continue even if some requests fail.
+-C Adds a cookie to the request, typically in the format name=value. This parameter can be used multiple times.
+-H Adds additional headers to the request. This is typically in the format of a valid header line, such as "Accept-Encoding: zip/zop;8bit".
+-X Uses a proxy server for the request.
+-k Enables HTTP KeepAlive (persistent connection) so that multiple requests are executed within a single HTTP session. By default, KeepAlive is disabled.
 ```
 
 ---
 
-### 压测示例
+### Example
 
-::: tabs
+:::tabs
 @tab GET
 ```shell:no-line-numbers
 ab -n 1000000 -c 200 -r  "http://localhost:8080/a/b?a=b"
@@ -76,7 +76,7 @@ ab -n 2000 -c 100 -p lock.json -T 'application/json' "http://127.0.0.1:9501/lock
 
 ---
 
-### 结果分析
+### Analysis Of Results
 
 ```text:no-line-numbers
 This is ApacheBench, Version 2.3 <$Revision: 1901567 $>
@@ -140,32 +140,32 @@ Percentage of the requests served within a certain time (ms)
 
 ## Jmeter
 
-### 配置线程组
+### Configuring Thread Group
 
 ![](https://img.tzf-foryou.xyz/img/20231227153101.png)
 
-### 添加http请求
+### Add HTTP Request
 
 ![](https://img.tzf-foryou.xyz/img/20231227153612.png)
 
-### 添加观察树
+### Add View Results Tree
 
 ![](https://img.tzf-foryou.xyz/img/20231227154551.png)
 
-### 添加响应时间图
+### Add Response Time Graph
 
 ![](https://img.tzf-foryou.xyz/img/20231227155119.png)
 
 ![](https://img.tzf-foryou.xyz/img/20231227155219.png)
 
-### 添加tps组件
+### Add TPS (Transactions Per Second)
 
 ![](https://img.tzf-foryou.xyz/img/20231227155548.png)
 
-### 添加头信息管理器
+### Add HTTP Header Manager
 
 ![](https://img.tzf-foryou.xyz/img/20231227155709.png)
 
-### 添加后置处理器
+### Add Post Processor
 
 ![](https://img.tzf-foryou.xyz/img/20231227155759.png)

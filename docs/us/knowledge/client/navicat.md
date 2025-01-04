@@ -31,10 +31,16 @@ sidebar: [
 ]}
 ]
 
-prev: /us/knowledge/git/qa
-next: /us/knowledge/idea/keymap
+prev: /us/knowledge/debug/charles
+next: /us/knowledge/client/mredis
 ---
 
-# Others
+# Navicat
 
-- [github Doc](https://docs.github.com/zh/authentication)
+::: tip 关系型数据库连接工具(按照我的使用优先级排序)
+:::
+
+- Navicat
+- DBeaver
+- Datagrip
+- PHPAdmin ~~(狗都不用)~~
