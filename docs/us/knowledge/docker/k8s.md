@@ -1,0 +1,20 @@
+---
+sidebar: [
+{text: '🐳 Docker', collapsible: true, children:[
+{text: 'Basic', link: 'knowledge/docker/docker'},
+{text: 'CI/CD', link: 'knowledge/docker/cicd'},
+{text: 'Volume', link: 'knowledge/docker/volume'},
+{text: 'Network', link: 'knowledge/docker/network'},
+{text: 'Commands', link: 'knowledge/docker/command'},
+]},
+{text: '🎛 Docker compose', link: 'knowledge/docker/docker-compose'},
+{text: '🕸 Docker swarm', link: 'knowledge/docker/docker-swarm'},
+{text: '🐙 K8s', link: 'knowledge/docker/k8s'},
+]
+
+prev: /us/knowledge/docker/docker-swarm
+next: /us/knowledge/container
+
+---
+
+# k8s集群

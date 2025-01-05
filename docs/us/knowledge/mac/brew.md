@@ -37,124 +37,111 @@ next: /us/knowledge/mac/iterm2
 
 # Brew
 
-目录
+Index
 [[toc]]
 
-## 安装
+## Install
 
 ```shell:no-line-numbers
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-## 替换源
+## Repository Replacement
 
-::: tip 【源仓库类型】
-- `brew` : Homebrew源代码仓库
-- `homebrew-core` : Homebrew核心源
-- `homebrew-cask` : 提供MacOS应用和大型二进制文件安装源
-- `homebrew-bottles` : 预编译二进制软件包
+::: tip 【Source Repository Types】
+- `brew` : Homebrew source code repository
+- `homebrew-core` : Homebrew core source
+- `homebrew-cask` : Repository for MacOS applications and large binary installations
+- `homebrew-bottles` : Precompiled binary software packages
 :::
 
 ---
 
-### brew源
+### Brew Resource 
 
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://mirrors.ustc.edu.cn/brew.git
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://mirrors.aliyun.com/homebrew/brew.git
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
 ```
 :::
-::::
 
 ---
 
-### core源
+### Core Resource
 
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-core.git
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
 ```
 :::
-::::
 
-### cask源
+### Cask Resource
 
-
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.ustc.edu.cn/homebrew-cask.git
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
 ```
 :::
-::::
 
 ---
 
-### bottles源
+### Bottles Resource
 
-> 你的 `shell` 是 `zsh` 就写入 `zshrc` ； `bash` 就写入 `bash_profile`
+> If your shell is `zsh`, write to `zshrc`; if it is bash, write to `bash_profile`.
 
 
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles' >> ~/.zshrc
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' >> ~/.zshrc
 echo 'export HOMEBREW_API_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles/api' >> ~/.zshrc
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles' >> ~/.zshrc
 ```
 :::
-::::
 
 ---
 
-最后刷新下配置
+Finally, refresh the configuration.
 
 ```shell:no-line-numbers
 source ~/.zshrc
 ```
 
-## 恢复源
+## Restore the source.
 
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://github.com/Homebrew/brew.git
@@ -167,7 +154,7 @@ brew update
 
 ---
 
-## 常用命令
+## Commonly Used Commands.
 
 ```shell:no-line-numbers
 # 搜索包
@@ -198,24 +185,24 @@ brew service start|stop|restart nginx
 brew services list
 ```
 
-## 安装旧版本PHP
+## Install an older version of PHP.
 
 ::: tip
-较新版本的homebrew仓库的php版本会只有 `7.4` 及以上，项目需要老版本PHP会比较麻烦。
+The newer versions of the Homebrew repository only offer PHP versions starting from `7.4`, which poses a challenge for projects requiring older versions of PHP.
 :::
 
 ---
 
-### 添加PHP旧仓库
+### Add the repository for older versions of PHP.
 
 ```shell:no-line-numbers
 brew tap shivammathur/php
 ```
 
-此时可以搜索到不同版本的php
+At this point, you should be able to locate various versions of PHP for selection.
 ![](https://img.tzf-foryou.xyz/img/20231227225241.png)
 
-### 多版本切换
+### Switching between multiple versions
 
 ```shell:no-line-numbers
 # 安装php版本切换器

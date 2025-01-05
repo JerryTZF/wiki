@@ -37,7 +37,7 @@ next: /us/knowledge/mac/brew
 
 # Docker Desktop
 
-::: tip 我一般讲docker作为我的本地环境
+::: tip I typically utilize Docker as my local environment.
 :::
 
 ![](https://img.tzf-foryou.xyz/img/20231228004228.png)
@@ -45,15 +45,15 @@ next: /us/knowledge/mac/brew
 ---
 
 
-::: tip 我的 docker hub 镜像
+::: tip My docker hub Images
 :::
 
 ---
 
-> 集成了 `nginx`、`php(多版本)`、`composer`、`supervisor` 的环境镜像。
+> An environment image integrated with `nginx`, `PHP (multiple versions)`, `composer`, and `supervisor`.
 
-PHP扩展包含 `swoole` 、`redis`、 `gd`、`imagick`、 `mysqli`、 `pdo_mysql` 、`zip`、 `mcrypt`, \
-详情见：[fpm-nginx-image](https://github.com/JerryTZF/fpm-nginx-image)
+The PHP extensions include `swoole`, `redis`, `gd`, `imagick`, `mysqli`, `pdo_mysql`, `zip`, and `mcrypt`. \
+Refer to see：[fpm-nginx-image](https://github.com/JerryTZF/fpm-nginx-image)
 
 ---
 

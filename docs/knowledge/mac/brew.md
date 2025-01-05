@@ -59,66 +59,56 @@ next: /knowledge/mac/iterm2
 
 ### brew源
 
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://mirrors.ustc.edu.cn/brew.git
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://mirrors.aliyun.com/homebrew/brew.git
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 git -C "$(brew --repo)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/brew.git
 ```
 :::
-::::
 
 ---
 
 ### core源
 
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.ustc.edu.cn/homebrew-core.git
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-core.git
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/core)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-core.git
 ```
 :::
-::::
 
 ### cask源
 
-
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.ustc.edu.cn/homebrew-cask.git
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.aliyun.com/homebrew/homebrew-cask.git
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.tuna.tsinghua.edu.cn/git/homebrew/homebrew-cask.git
 ```
 :::
-::::
 
 ---
 
@@ -127,24 +117,21 @@ git -C "$(brew --repo homebrew/cask)" remote set-url origin https://mirrors.tuna
 > 你的 `shell` 是 `zsh` 就写入 `zshrc` ； `bash` 就写入 `bash_profile`
 
 
-:::: code-group
-::: code-group-item 中科大
+::: tabs
+@tab 中科大
 ```shell:no-line-numbers
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.ustc.edu.cn/homebrew-bottles/bottles' >> ~/.zshrc
 ```
-:::
-::: code-group-item 阿里巴巴
+@tab 阿里巴巴
 ```shell:no-line-numbers
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles' >> ~/.zshrc
 echo 'export HOMEBREW_API_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles/api' >> ~/.zshrc
 ```
-:::
-::: code-group-item 清华大学
+@tab 清华大学
 ```shell:no-line-numbers
 echo 'export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.tuna.tsinghua.edu.cn/homebrew-bottles/bottles' >> ~/.zshrc
 ```
 :::
-::::
 
 ---
 

@@ -37,36 +37,36 @@ next: /us/knowledge/sundry/picgo
 
 # Iterm2
 
-目录
+Index
 [[toc]]
 
 ::: tip
-MacOS系统下最好用的shell终端。
+The most optimal shell terminal for MacOS system.
 :::
 
-## 安装
+## Install
 
-### 官网安装 
+### Install from the official website
 
-[官网安装](https://iterm2.com/downloads.html)
+[Install](https://iterm2.com/downloads.html)
 
-### brew安装
+### Brew Install
 
 ```shell:no-line-numbers
 brew install iTerm2  
 ```
 
-## 基本配置
+## Foundational Setup.
 
-### 设置为默认终端
+### Establish as the default terminal.
 ![](https://img.tzf-foryou.xyz/img/20231227233156.png)
 
-### 配置连接信息
+### Configure the connection information.
 ![](https://img.tzf-foryou.xyz/img/20231227233928.png)
 
 ## Oh-My-ZSH
 
-### 安装
+### Install
 
 ```shell:no-line-numbers
 #Install oh-my-zsh via curl
@@ -78,7 +78,7 @@ sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O 
 
 ---
 
-### 修改shell
+### Switch Shell
 
 ```shell:no-line-numbers
 # 查看当前使用的shell
@@ -89,9 +89,9 @@ cat /etc/Shells
 chsh -s /bin/zsh
 ```
 
-### 修改oh-my-zsh主题
+### Modify The oh-my-zsh Theme.
 
-**查看可用主题**
+**View available themes.**
 
 ```shell:no-line-numbers
 ls ~/.oh-my-zsh/themes
@@ -99,13 +99,13 @@ ls ~/.oh-my-zsh/themes
 
 ---
 
-**预览各个主题效果**
+**Preview the effects of various themes.**
 
 [主题效果](https://github.com/ohmyzsh/ohmyzsh/wiki/Themes)
 
 ---
 
-**修改zsh配置配置oh-my-zsh主题**
+**Modify the zsh configuration to set up the oh-my-zsh theme.**
 
 ```shell:no-line-numbers
 echo 'ZSH_THEME="agnoster"' >> ~/.zshrc
@@ -114,9 +114,9 @@ source ~/.zshrc
 
 ---
 
-**安装插件**
+**Install plugins.**
 
-> 这里我安装了 `zsh-autosuggestions`、 `git`、`zsh-syntax-highlighting`
+> Here, I have installed `zsh-autosuggestions`, `git`, and `zsh-syntax-highlighting`.
 
 ```shell:no-line-numbers
 # zsh-syntax-highlighting
@@ -133,16 +133,16 @@ source ~/.zshrc
 
 ---
 
-### 快捷键
+### Keyboard Shortcuts
 
-- `Ctrl + b` 光标向前移动一个字符，和向左方向键一样。
-- `Ctrl + f` 光标向后移动一个字符，和向右方向键一样。
-- `Ctrl + d` 删除当前字符。
-- `Ctrl + -` 撤销操作。
-- `Ctrl + a` 将光标移动到行首的位置。
-- `Ctrl + e` 将光标移动到行尾的位置。
-- `Ctrl + l` 清空屏幕。
-- `Ctrl + k` 从当前光标位置剪切所有内容直到行尾的位置。
-- `Ctrl + r` 按下后输入要查找的命令，再按继续往上查找。
-- `Ctrl + j` 使用当前搜索到得命令，结束搜索。
-- `Ctrl + g` 取消搜索，恢复命令行。
+- `Ctrl + b`: Moves the cursor one character backward, akin to the left arrow key.
+- `Ctrl + f`: Moves the cursor one character forward, similar to the right arrow key.
+- `Ctrl + d`: Deletes the current character.
+- `Ctrl + -`: Performs an undo operation.
+- `Ctrl + a`: Positions the cursor at the beginning of the line.
+- `Ctrl + e`: Positions the cursor at the end of the line.
+- `Ctrl + l`: Clears the screen.
+- `Ctrl + k`: Cuts all content from the current cursor position to the end of the line.
+- `Ctrl + r`: Press to input the command to be searched for, then press to continue searching upward.
+- `Ctrl + j`: Utilizes the currently found command to conclude the search.
+- `Ctrl + g`: Cancels the search, restoring the command line.

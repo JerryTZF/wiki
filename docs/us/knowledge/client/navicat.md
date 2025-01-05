@@ -37,7 +37,7 @@ next: /us/knowledge/client/mredis
 
 # Navicat
 
-::: tip 关系型数据库连接工具(按照我的使用优先级排序)
+::: tip Relational database connection tool (arranged according to my prioritized usage)
 :::
 
 - Navicat

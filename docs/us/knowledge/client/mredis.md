@@ -37,7 +37,7 @@ next: /us/knowledge/client/docker
 
 # Mredis
 
-::: tip Redis数据库连接工具(按照我的使用优先级排序)
+::: tip Redis database connection tools prioritized according to my usage preference
 :::
 
 - MRedis

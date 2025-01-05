@@ -29,30 +29,28 @@ next: /knowledge/linux/crontab
 
 ## 安装
 
-:::: code-group
-::: code-group-item Ubuntu
+::: tabs
+@tab Ubuntu
 ```shell:no-line-numbers
 apt-get install supervisor
 ```
-:::
-::: code-group-item CentOS
+@tab CentOS
 ```shell:no-line-numbers
 # 安装 epel 源，如果此前安装过，此步骤跳过
 yum install -y epel-release
 yum install -y supervisor  
 ```
-:::
-::: code-group-item MacOS
+@tab MacOS
 ```shell:no-line-numbers
 brew install supervisor  
 ```
 :::
-::::
+
 
 ## 配置文件
 
-:::: code-group
-::: code-group-item Supervisor配置文件
+::: tabs
+@tab Supervisor配置文件
 ```shell:no-line-numbers
 ; supervisor config file
 
@@ -83,8 +81,7 @@ serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
 [include]
 files = /etc/supervisor/conf.d/*.conf  
 ```
-:::
-::: code-group-item 示例配置
+@tab 示例配置
 ```shell:no-line-numbers
 [program:app] ; 程序名称，在 supervisorctl 中通过这个值来对程序进行一系列的操作
 autorestart=True      ; 程序异常退出后自动重启
@@ -99,8 +96,7 @@ stdout_logfile_backups = 20     ; stdout 日志文件备份数
 ; stdout 日志文件，需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录（supervisord 会自动创建日志文件）
 stdout_logfile = /data/logs/usercenter_stdout.log
 ```
-:::
-::: code-group-item Hyperf 配置文件
+@tab Hyperf 配置文件
 ```shell:no-line-numbers
 # 新建一个应用并设置一个名称，这里设置为 hyperf
 [program:hyperf]
@@ -124,7 +120,6 @@ stderr_logfile=/your/path/hyperf-v3/runtime/stderr.log
 stdout_logfile=/your/path/hyperf-v3/runtime/stdout.log
 ```
 :::
-::::
 
 ## 管理 Supervisor
 
@@ -168,28 +163,24 @@ systemctl enable supervisor.service
 
 ## 管理 Hyperf 服务
 
-:::: code-group
-::: code-group-item 启动 Hyperf
+::: tabs
+@tab 启动 Hyperf
 ```shell:no-line-numbers
 supervisorctl start hyperf
 ```
-:::
-::: code-group-item 重启 Hyperf
+@tab 重启 Hyperf
 ```shell:no-line-numbers
 supervisorctl restart hyperf  
 ```
-:::
-::: code-group-item 停止 Hyperf
+@tab 停止 Hyperf
 ```shell:no-line-numbers
 supervisorctl stop hyperf
 ```
-:::
-::: code-group-item 查看 Hyperf 状态
+@tab 查看 Hyperf 状态
 ```shell:no-line-numbers
 supervisorctl status hyperf
 ```
 :::
-::::
 
 ## 常用命令
 
