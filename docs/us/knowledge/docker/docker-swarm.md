@@ -17,57 +17,58 @@ next: /us/knowledge/docker/k8s
 
 ---
 
-# docker集群
+# Docker swarm
 
-目录
+Index
 [[TOC]]
 
-## 1、docker swarm 是什么
+## 1、What is Docker Swarm
 
-`Docker` 原生支持的容器集群管理工具，它可以把多个 `Docker` 主机组成的系统转换为单一的虚拟 `Docker` 主机，使得容器可以组
-成***跨主机***的子网网络。通过执行命令与单一的主 `Swarm` 进行沟通，而不必分别和每个 `Docker Engine` 沟通。在灵活的调度策略下，
-团队可以更好地管理可用的主机资源，保证应用容器的高效运行。
+Docker's native container orchestration tool that allows you to combine multiple Docker hosts into a single virtual Docker host. This enables containers to form cross-host subnet networks. By executing commands, you can communicate with a single main Swarm instead of interacting with each Docker Engine individually. With flexible scheduling strategies, teams can better manage available host resources, ensuring the efficient operation of application containers.
 
-## 2、docker swarm 优势
+## 2、Advantages of Docker Swarm
 
-- 动态扩容，可以动态的将各个服务运行至对应的机器。 (`replicated` 、 `global`)
-- 集群服务支持动态路由，由 `ingress routing mesh` 支持。
-- 支持动态扩容缩容，以及节点不可用时的动态发现和舍弃。
+- Dynamic scaling: You can dynamically deploy services to the corresponding machines (replicated, global).
+- Cluster service dynamic routing: Supported by the ingress routing mesh.
+- Dynamic scaling and node failure handling: Supports dynamic scaling up or down, and automatic discovery and removal of unavailable nodes.
 
-## 3、集群构建
+## 3、Cluster Setup
 
 ::: tip
-这里以一台阿里云(Manager)、两台腾讯云(Worker)为例，
-Ps:正常来说，集群搭建应该是一个机房或者一个局域网内机器搭建，这里以两台公网机器搭建，顺便还要搭建自己的内网，这里我使用的是 [zerotier](https://my.zerotier.com/network/e5cd7a9e1c096a33)，
-组[内网文章教程](https://zhuanlan.zhihu.com/p/383471270)
+Here, we use one Alibaba Cloud instance (Manager) and two Tencent Cloud instances (Workers) as an example.
+Ps: Normally, cluster setup would be done within a data center or a local area network (LAN), 
+but here we are setting up the cluster across two public machines. 
+Additionally, we also need to set up our own internal network. 
+For this, I am using [ZeroTier](https://my.zerotier.com/network/e5cd7a9e1c096a33), and you can refer to this [internal network tutorial](https://zhuanlan.zhihu.com/p/383471270).
 :sunglasses:
 
-这里的`ECS`的安全组需要打开一些端口。
+The security groups for the `ECS` instances here need to open some ports.
 
 ![](https://img.tzf-foryou.xyz/img/20220405225239.png)
 
 ![](https://img.tzf-foryou.xyz/img/20220405225409.png)
 
-端口解释：\
-`4789`：端口4789用于容器入网的UDP。`Docker Swarm` 默认的是4789，但是这里为什么是5789呢？因为阿里云默认不开放 `4789 UDP` 端口。:cry:\
-`7946`：端口7946 TCP/UDP用于容器网络发现。\
-上面两个端口可参见：[Use swarm mode routing mesh](https://docs.docker.com/engine/swarm/ingress/)\
-`2377`：指定将向 `swarm` 的其他成员通告用于 `API` 访问和覆盖网络的地址的默认端口。
-详见：[docker swarm init](https://docs.docker.com/engine/reference/commandline/swarm_init/) 搜索 `2377` 即可见。
+Port explanations:\
+`4789`：Port 4789 is used for container network entry via UDP. The default for Docker Swarm is 4789, but why is it set to 5789 here? Because Alibaba Cloud does not open the 4789 UDP port by default. :cry:\
+`7946`：Port 7946 TCP/UDP is used for container network discovery.\
+You can refer to the above two ports here: [Use swarm mode routing mesh](https://docs.docker.com/engine/swarm/ingress/)\
+`2377`：This is the default port used to communicate with other swarm members for API access and overlay network address announcements.
+
+Detail to see：[docker swarm init](https://docs.docker.com/engine/reference/commandline/swarm_init/) search `2377`。
 :::
 
-### 3-1、初始化Manager
+### 3-1、Initialize Manager
 
 ```shell:no-line-numbers
 docker swarm init --advertise-addr 10.147.18.171:2377 --data-path-addr 10.147.18.171 --data-path-port 5789
 ```
 
-::: warning 10.147.18.171 为你在 zerotier 中设置的对应IP。
+::: warning 10.147.18.171 is the IP you set in Zerotier.
 :::
 
 ---
 
-### 3-2、加入Worker
+### 3-2、Join Worker
 
 ```shell:no-line-numbers
 docker swarm join --token SWMTKN-1-4a4oznjmnvmkzn801ktr77enqcfvef66oxxxxxxxxxxxx-1d8eqa89161a1rcz3ozfqt4iz 10.147.18.171:2377
@@ -75,30 +76,30 @@ docker swarm join --token SWMTKN-1-4a4oznjmnvmkzn801ktr77enqcfvef66oxxxxxxxxxxxx
 
 ---
 
-> 在Manager上可以查看节点信息，加入节点前，建议先修改下 `Hostname` 容易区分。
+> You can view node information on the Manager. It is recommended to modify the `Hostname` before joining the node for easier identification.
 
 ![](https://img.tzf-foryou.xyz/img/20220406102016.png)
 
 ---
 
-### 3-3、创建overlay网络
+### 3-3、Create Overlay Network
 
 ```shell
 docker network create -d overlay --attachable proxy
 ```
 
-### 3-4、编写stack文件
+### 3-4、Write Stack File
 
 ::: warning
 
-stack文件的几个关键点注意下：
-- `image` 不可以是动态build，只能是已经构建完成的镜像。
-- `docker stack`不支持基于第2版写的 `docker-compose.yml` ，也就是 `version` 版本至少为3。然而`Docker Compose`对版本为2和3的 文件仍然可以处理。
-- 集群中的数据共享，这里的卷可以采用 `挂载远程卷(NFS)`
-  :::
+Here are a few key points to keep in mind when writing a stack file:
+- image cannot be dynamically built; it must be an already built image.
+- docker stack does not support docker-compose.yml files based on version 2. The version must be at least 3. However, Docker Compose can still handle files with versions 2 and 3.
+- For data sharing in the cluster, you can use remote volume mounts (NFS) for the volume.
+:::
 
-集群一些关键字段请参考：[deploy](https://docs.docker.com/compose/compose-file/deploy/)\
-这里有几个示例可以参考下我的stack文件。【注意】traefik的配置选项 ~~后面~~ :sunglasses:  单独记[笔记](harvest/traefik/overview.md)再介绍。
+For details about some key fields of the cluster, see Cluster：[deploy](https://docs.docker.com/compose/compose-file/deploy/)\
+Here are a few examples to refer to my stack file。【Note】traefik config ~~后面~~ :sunglasses:  单独记[笔记](harvest/traefik/overview.md)再介绍。
 - [bitwarden-stack.yml](https://github.com/JerryTZF/hyperf-demo/blob/main/docs/bitwarden-stack.yml)
 - [nginx-stack.yml](https://github.com/JerryTZF/hyperf-demo/blob/main/docs/nginx-stack.yml)
 - [portainer-stack.yml](https://github.com/JerryTZF/hyperf-demo/blob/main/docs/portainer-stack.yml)
@@ -106,7 +107,7 @@ stack文件的几个关键点注意下：
 
 ---
 
-数据卷绑定目录示例：
+Example of a data volume binding directory:
 
 ```yaml:no-line-numbers
 services:
@@ -128,7 +129,7 @@ volumes:
 
 ---
 
-绑定文件示例：
+Example of a binding file:
 
 ```yaml:no-line-numbers
 version: '3.7'
@@ -166,34 +167,39 @@ networks:
 
 ---
 
-### 3-5、启动和管理
+### 3-5、Start and Manage
 
 ```shell:no-line-numbers
 sudo docker stack deploy --with-registry-auth -c vuepress-stack.yml vuepress
 ```
 
-## 4、swarm网络
+## 4、Swarm Network
 
-### 4-1、服务发现
+### 4-1、Service Discovery
 
-Docker Swarm Mode 下会为每个节点的 docker engine内置一个DNS server，
-各个节点间的DNS server通过control plane的gossip协议互相交互信息。注：此处DNS server用于容器间的服务发现。
+In Docker Swarm Mode, each node's Docker engine has a built-in DNS server. The DNS servers of different nodes communicate with each other through the gossip protocol of the control plane. Note: This DNS server is used for service discovery between containers.
 
-swarm mode会为每个--net=自定义网络的service分配一个DNS entry。注：目前必须是自定义网络，比如overaly。
-而bridge和routing mesh的service，是不会分配DNS的。
+Swarm mode assigns a DNS entry to each service that is connected to a custom network (e.g., an overlay network). Note: Currently, the network must be custom, such as an overlay network. Services on bridge and routing mesh networks do not receive DNS entries.
 
 ### 4-2、LB(load balance)
 
 ::: tip
-docker swarm mode有两种LB模式：1. Internal Load Balancing 2. Ingress Load Balancing。\
-这里注重说 `Ingress`
+Docker Swarm mode has two types of load balancing modes: 1. Internal Load Balancing and 2. Ingress Load Balancing. Here, we focus on Ingress Load Balancing.
 :::
 
 ---
 
-Ingress LB可以将容器网络中的服务暴露到宿主机网络中，从而被外部所访问。
+Ingress Load Balancing can expose services from the container network to the host network, allowing them to be accessed externally.
 
-Swarm mode下，docker会创建一个默认的overlay网络—ingress network。
-Docker也会为每个worker节点创建一个特殊的net namespace（sandbox）-- ingress_sbox。
-ingress_sbox有两个endpoint，一个用于连接ingress network，另一个用于连接local bridge network -- docker_gwbridge。
-Ingress network的IP空间为10.255.0.0/16，所有router mesh的service都共用此空间。
+In Swarm mode, Docker creates a default overlay network called the ingress network. Additionally, Docker creates a special network namespace (sandbox) on each worker node called ingress_sbox. The ingress_sbox has two endpoints:
+
+- One endpoint connects to the ingress network.
+- The other endpoint connects to the local bridge network, docker_gwbridge.
+
+The IP range for the ingress network is 10.255.0.0/16, and all routing mesh services share this IP space. This allows the swarm to handle external traffic efficiently, directing it to the appropriate service across the cluster.
+
+
+
+
+
+

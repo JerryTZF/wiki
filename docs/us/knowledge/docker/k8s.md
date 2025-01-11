@@ -17,4 +17,4 @@ next: /us/knowledge/container
 
 ---
 
-# k8s集群
+# k8s

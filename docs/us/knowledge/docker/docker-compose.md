@@ -17,28 +17,28 @@ next: /us/knowledge/docker/docker-swarm
 
 ---
 
-# 容器编排
+# Docker compose
 
-目录
+Index
 [[TOC]]
 
-::: tip 【概念】
-- 多个容器需要相互通信或者相互依赖的时候，我们可以将多个容器按照一定规则编排在一起。通过 `docker-compose.yml` 声明。
-- `docker-compose.yml` 基于V3版本，具体每一个选项可以参考：[v3配置参考](https://docs.docker.com/compose/compose-file/compose-file-v3/)
-- 单个容器我也更加倾向于编写 `docker-compose.yml` 文件，因为根据声明文件可以更加清晰的看出这个容器内都做了什么配置。
+::: tip 【Concept】
+- When multiple containers need to communicate or depend on each other, we can arrange them together according to certain rules. This is done by declaring them in a `docker-compose.yml` file.
+- The `docker-compose.yml` is based on version 3. For details on each option, refer to the: [v3 configuration reference](https://docs.docker.com/compose/compose-file/compose-file-v3/)
+- Even for a single container, I prefer to write a `docker-compose.yml` file, as it provides a clearer view of what configurations are made within that container.
 :::
 
 ---
 
-## 容器共享网络
+## Container Shared Network
 
-- 容器间需要进行通信，则需要多个容器处于同一网络配置下即可(docker swarm模式需要特殊处理)
-- 多个容器处于同一网络下，则无需编排在一个`docker-compose.yml`内
-- 容器间通信的可以通过`IP:port`通信。也可以通过`ContainerName:port`通信，但是对应的网络编排和配置要注意异同
+- If containers need to communicate with each other, they must be on the same network configuration (special handling is required in Docker Swarm mode).
+- Multiple containers on the same network do not need to be orchestrated within a single docker-compose.yml.
+- Communication between containers can be done via IP:port. Alternatively, containers can communicate using ContainerName:port, but the network orchestration and configuration must be handled carefully to account for differences.
 
 ---
 
-> 这里以redis主从为例(多Redis实例间需要通信备份数据)
+> Here is an example using Redis master-slave (multiple Redis instances need to communicate to back up data):
 
 ---
 
@@ -111,21 +111,21 @@ networks:
 ---
 
 ::: warning
-看`yml`文件是看不出通信的，需要看下对应的配置 :
+Looking at the yml file alone doesn't reveal the communication setup; you need to check the corresponding configuration：
 - [master-redis-config](https://github.com/JerryTZF/docker-redis/blob/main/redis-master/conf/redis.conf)
 - [slave1-redis-config](https://github.com/JerryTZF/docker-redis/blob/main/redis-slave/conf2/redis.conf)
 - [slave2-redis-config](https://github.com/JerryTZF/docker-redis/blob/main/redis-slave/conf3/redis.conf)
 
 ---
 
-这里注意下从Redis的配置中的 `slaveof` 字段，可以想想为啥端口是 `6379` 而不是 `6371`  :sunglasses:
+Here, pay attention to the slaveof field in the Redis configuration for the slave. You can think about why the port is 6379 instead of 6371 :sunglasses:
 :::
 
-## 多容器共享文件、目录
+## Multiple Containers Sharing Files and Directories
 
-- 多容器需要共享数据时，需要挂在到一个公共卷，然后容器编排或者启动容器时指定下卷的映射即可
-- 当公共卷的数据非常敏感且重要时，最好做好备份工作
-- 如需多容器共享数据，最好提前创建一个共享卷，然后指定使用已经存在的共享卷
+- When multiple containers need to share data, it is necessary to mount it to a shared volume, and then specify the volume mapping when orchestrating or starting the containers.
+- If the data in the shared volume is highly sensitive and important, it is best to perform regular backups.
+- If multiple containers need to share data, it is recommended to create a shared volume in advance and then specify the usage of the existing shared volume.
 
 ---
 

@@ -17,38 +17,38 @@ next: /us/knowledge/docker/network
 
 ---
 
-# 卷的使用
+# Volume
 
-目录
+Index
 [[toc]]
 
-::: tip 【说明】
-我自己的使用场景更多聚焦于 `容器编排(docker compose)` 和 `集群模式(docker swarm)` 下的使用，
-所以示例会偏向于上面两种模式 ，对于单个容器的创建过程中卷的声明
-，你可以参考 [volume](https://docs.docker.com/storage/volumes/)。
+::: tip 【Note】
+My usage scenario focuses more on the use of container orchestration (docker compose) and cluster mode (docker swarm). 
+Therefore, the examples will lean towards these two modes. 
+For the declaration of volumes during the creation of a single container, you can refer to [volume](https://docs.docker.com/storage/volumes/)
 :::
 
 ---
 
-## 容器数据管理
+## Container Data Management
 
-- **Volume**： 卷存储在由 `Docker` 管理的主机文件系统的一部分（Linux 上的 `/var/lib/docker/volumes/`）。 非 `Docker` 进程不应修改文件系统的这一部分。卷是在 `Docker` 中持久化数据的最佳方式。
-- **Bind Mounts**：绑定挂载可以存储在主机系统的任何位置。它们甚至可能是重要的系统文件或目录。`Docker` 主机或 `Docker` 容器上的非 `Docker` 进程可以随时修改它们。
-- **Tmpfs**：`tmpfs` 挂载仅存储在主机系统的内存中，永远不会写入主机系统的文件系统。
+- **Volume**： Volumes are stored as part of the host filesystem managed by Docker (on Linux, this is typically located at /var/lib/docker/volumes/). Non-Docker processes should not modify this part of the filesystem. Volumes are the best way to persist data in Docker.
+- **Bind Mounts**：Bind mounts can be stored anywhere on the host system. They may even be important system files or directories. Non-Docker processes on the Docker host or in the Docker container can modify them at any time.
+- **Tmpfs**：tmpfs mounts are stored only in the host system's memory and are never written to the host filesystem.
 
-***下面主要说明 `Volume` 和 `Bind Mounts` 这两种数据持久化方式。***
+***The following primarily discusses the two data persistence methods: `Volume` and `Bind Mounts`.***
 
 ---
 
 ## Bind Mounts
 
-**适用场景或原则上你应该这么使用：**
+**Applicable Scenarios or Principles for Usage:**
 
-1. 从主机共享配置文件到容器。
-2. 在 `Docker` 主机上的开发环境和容器之间共享源代码或构建工件。即：`Docker` 容器只是提供对应的开发环境，源代码全部映射入容器中进行调试。例如：
-3. 当 `Docker` 主机的文件或目录结构保证与容器所需的绑定挂载一致时
+1. Sharing configuration files from the host to the container.
+2. Sharing source code or build artifacts between the development environment on the Docker host and the container. That is, the Docker container only provides the corresponding development environment, with all source code mapped into the container for debugging. For example:
+3. When the file or directory structure on the Docker host ensures consistency with the bind mounts required by the container.
 
-***示例：***
+***Example:***
 
 ```yaml:no-line-numbers
 version: "3.5"
@@ -70,19 +70,20 @@ services:
 
 ---
 
-::: danger 【注意】
-如果将绑定挂载或非空卷挂载到容器中存在某些文件或目录的目录中，则这些文件或目录会被挂载遮盖，
-就像将文件保存到 `Linux` 主机上的 `/mnt` 中，然后将 `USB` 驱动器安装到 `/mnt`。
-`/mnt` 的内容将被 `USB` 驱动器的内容所掩盖，直到卸载 `USB` 驱动器。隐藏的文件不会被删除或更改，但在挂载绑定挂载或卷时无法访问。
+::: danger 【Note】
+If a bind mount or a non-empty volume is mounted into a directory in the container that already contains some files or directories, those files or directories will be covered by the mount. 
+It's like saving files to `/mnt` on a `Linux` host and then mounting a USB drive to `/mnt`. 
+The contents of `/mnt` will be overshadowed by the contents of the USB drive until the `USB` drive is unmounted. 
+The hidden files will not be deleted or altered, but they will not be accessible when the bind mount or volume is mounted.
 :::
 
 ---
 
 ## Volume
 
-**适用场景或原则上你应该这么使用：**
+**Applicable Scenarios or Principles for Usage:**
 
-1. 在多个正在运行的容器之间共享数据。如果你没有显式创建它，则会在第一次将其挂载到容器中时创建一个卷。当该容器停止或移除时，该卷仍然存在。多个容器可以同时挂载同一个卷，无论是读写还是只读。仅当你明确删除它们时才会删除卷。示例：
+1. Sharing data between multiple running containers. If you do not create it explicitly, a volume will be created the first time it is mounted into a container. The volume will persist even after the container stops or is removed. Multiple containers can simultaneously mount the same volume, either in read-write or read-only mode. The volume will only be deleted when you explicitly remove it. Example:
 ```yaml:no-line-numbers
 version: "3.9"
 
@@ -99,15 +100,15 @@ services:
 volumes:
   data-volume:
 ```
-2. 当 `Docker` 主机不能保证具有给定的目录或文件结构时。卷可帮助你将 `Docker` 主机的配置与容器运行时分离。
-3. ~~当你想将容器的数据存储在远程主机或云提供商上而不是本地时~~ 暂时没用过 :cry: 。
-4. 当你需要从一台 `Docker` 主机 ***备份*** 、***恢复*** 或 ***迁移*** 数据到另一台主机时，卷是更好的选择。你可以停止使用该卷的容器，然后备份该卷的目录。
-5. 当你的应用程序需要 `Docker` 上的高性能 I/O 时。卷存储在 `Linux VM` 中而不是主机中，这意味着读取和写入具有更低的延迟和更高的吞吐量。
-6. 当你的应用程序需要 `Docker` 上的完全本机文件系统行为时。例如，数据库引擎需要精确控制磁盘刷新以保证事务的持久性。卷存储在 `Linux` 虚拟机中并可以做出这些保证，而绑定挂载远程到 `macOS` 或 `Windows`，其中文件系统的行为略有不同。
+2. When the Docker host cannot guarantee the existence of a given directory or file structure, volumes can help separate the Docker host's configuration from the container's runtime.
+3. ~~When you want to store container data on a remote host or cloud provider instead of locally Haven't used it yet~~ :cry:.
+4. When you need to `backup`, `restore`, or `migrate` data from one `Docker` host to another, volumes are a better choice. You can stop the containers using the volume and then back up the directory of the volume.
+5. When your application requires high-performance I/O on `Docker`. Volumes are stored in a `Linux VM` rather than the host, which means reading and writing have lower latency and higher throughput.
+6. When your application requires fully native filesystem behavior on Docker. For example, a database engine needs precise control over disk flushing to ensure transaction durability. Volumes are stored in a Linux virtual machine and can make these guarantees, whereas bind mounts remote to `macOS` or `Windows`, where the filesystem behavior is slightly different.
 
 ---
 
-***示例：***
+***Example:***
 
 ```yaml:no-line-numbers
 version: "3.5"
@@ -140,25 +141,25 @@ volumes:
 
 ---
 
-::: warning volume 和 bind mount 区别
-- bind mount 需要你自己声明好宿主机对应的目录 `挂载` 至 容器内的指定目录，而 volume 是docker自己进行管理，只需要你声明对应的卷即可。
-- 不同的系统(`Mac`、`Windows`、`Linux`)对应的文件系统的目录不一致，bind mount需要自己管理，并且对应的权限也是只有root才可以，volume 则不需要。
-- 当需要共享目录时，请使用 `volume` ，尽量不要用 `volume_from` 关键字了。
+::: warning The differences between volume and bind mount:
+- Bind mount requires you to manually declare the corresponding directory on the host to mount to a specified directory inside the container, whereas volume is managed by Docker, and you only need to declare the corresponding volume.
+- The directory of the filesystem differs across different systems (Mac, Windows, Linux). Bind mount needs to be managed by you, and the permissions are usually only accessible by root, while volumes do not have this restriction.
+- When you need to share directories, use volume. Try to avoid using the volume_from keyword.
 :::
 ---
 
-## 集群模式
+## Cluster Mode
 
-::: warning 【注意】
-集群模式(Docker Swarm)下，挂载单个文件(配置文件)，数据持久化会和单机模式不太一样，下面进行说明。
+::: warning 【Note】
+In cluster mode (Docker Swarm), mounting a single file (configuration file) for data persistence will be different from the single-node mode. The details are explained below.
 :::
 
-### 1、配置文件
+### 1、Configuration Files
 
-::: tip 多个节点的容器共同使用对应的配置
+::: tip Containers on multiple nodes share the corresponding configuration.
 :::
 
-***示例：***
+***Example:***
 
 ```yaml:no-line-numbers
 version: "3.5"
@@ -194,22 +195,21 @@ configs:
 ```
 ---
 
-::: warning 【注意】
-- 非 `Manager` 不能创建和管理 `Configs`。
-- 要先移除对应的 `Service` 后，才能删除对应的配置。
-- 当需要更新配置时，详见：[官方文档](https://docs.docker.com/engine/swarm/configs/#example-rotate-a-config)、[CSDN](https://blog.csdn.net/u013761036/article/details/103650652)
-  :::
+::: warning 【Note】
+- Non-Manager nodes cannot create or manage Configs.
+- You must remove the corresponding Service before deleting the associated configuration.
+- For updating configurations, see the following resources:[Official Documentation](https://docs.docker.com/engine/swarm/configs/#example-rotate-a-config)、[CSDN](https://blog.csdn.net/u013761036/article/details/103650652)
+:::
 
 ---
 
-### 2、卷的使用
+### 2、Volume Usage
 
-::: warning 【说明】
-暂时我是让对应的节点创建它们各自的卷，日志等需要查看的内容分散在不同节点。
-你可以使用 [volume NFS 共享存储模式](https://qastack.cn/programming/47756029/how-does-docker-swarm-implement-volume-sharing)。当然集群日志收集使用 `ELK` 等专业方案更加优雅。
+::: warning 【Note
+For now, I have the corresponding nodes create their own volumes, and logs or other content that needs to be viewed are distributed across different nodes. You can use [volume NFS shared storage mode](https://qastack.cn/programming/47756029/how-does-docker-swarm-implement-volume-sharing). Of course, using professional solutions like ELK for cluster log collection is a more elegant approach.】
 :::
 
-***示例：***
+***Example:***
 
 ```yaml:no-line-numbers
 version: "3.5"
@@ -246,6 +246,6 @@ volumes:
 
 ---
 
-::: tip 持续施工
+::: tip Under Construction
 :construction:
 :::
